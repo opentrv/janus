@@ -6,12 +6,13 @@ class Command(BaseCommand):
     help = 'Starts the UDP server'
                     
     def add_arguments(self, parser):
-        pass
+        parser.add_argument('--log', default='udp_server.log', help='udp server log')
+
         # parser.add_argument('--start', help='Start datetime, ISO 8601 format (default: now)', default=None)
         # parser.add_argument('--frequency', type=int, help='Scraping Frequency in seconds (default: 1 day)', default=86400)
                 
     def handle(self, *args, **options):
-        log_filepath = '../logs/udp_server.log'
+        log_filepath = options['log']
         f = open(log_filepath, 'ab')
         UDPServer(log_filepath).start()
 

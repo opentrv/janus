@@ -3,13 +3,17 @@ import os
 import subprocess
 from django.test import TestCase
 
+tests_dir = '.temp/tests'
+if not os.path.exists(tests_dir):
+    os.makedirs(tests_dir)
+
 class FunctionalTest(TestCase):
-    log_filepath = '../logs/udp_server.log'
+    log_filename = 'udp_server.log'
 
     def test(self):
         
         # start the udp server
-        self.udp_server_process = subprocess.Popen(['python', 'manage.py', 'start_udp_server'])
+        self.udp_server_process = subprocess.Popen(['python', 'manage.py', 'start_udp_server', '--log', self.log_filepath])
         time.sleep(1)
 
         # check the server started up okay
@@ -29,6 +33,26 @@ class FunctionalTest(TestCase):
         
         self.fail('TODO')
 
+    def __init__(self, *args, **kwargs):
+        dirs = os.listdir(tests_dir)
+        test_numbers = []
+        for dir in dirs:
+            try:
+                test_number = int(dir)
+                test_numbers.append(test_number)
+            except:
+                pass
+        self.test_dir = tests_dir + '/{}'.format(len(test_numbers))
+        os.makedirs(self.test_dir)
+        self.log_filepath = self.test_dir + '/{}'.format(self.log_filename)
+            
+        TestCase.__init__(self, *args, **kwargs)
+        
+    def setUp(self):
+        # if not os.path.exists(self.tests_dir):
+        #     os.makedirs
+        pass
+        
     def tearDown(self):
 
         # remove any log files generated

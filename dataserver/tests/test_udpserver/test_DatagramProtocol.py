@@ -35,5 +35,5 @@ class TestDatagramReceived(TestDatagramProtocol):
 
         with open(self.log_filepath, 'rb') as f:
             line = f.readline()
-            self.assertEqual(line, '{} Received: data'.format(datetime.isoformat()))
+            self.assertEqual(line, '{} Received: data\n'.format(datetime.isoformat()))
 
