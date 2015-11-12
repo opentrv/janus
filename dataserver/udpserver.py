@@ -1,3 +1,4 @@
+from django.utils import timezone
 from twisted.internet.protocol import DatagramProtocol as TwistedDatagramProtocol
 from twisted.internet import reactor
 
@@ -8,7 +9,7 @@ class DatagramProtocol(TwistedDatagramProtocol):
         self.log_filepath = log_filepath
 
     def datagramReceived(self, data, (host, port)):
-        self.log_file.write('{}\n'.format(data))
+        self.log_file.write('{} Received: {}'.format(timezone.now().isoformat(), data))
         self.log_file.flush()
 
 class UDPServer(object):
