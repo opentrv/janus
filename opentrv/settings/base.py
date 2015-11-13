@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dataserver',
+    'opentrv_sensor',
 )
 
 MIDDLEWARE_CLASSES = (
