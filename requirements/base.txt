@@ -11,6 +11,7 @@ pbr==1.8.1
 pexpect==4.0.1
 pickleshare==0.5
 ptyprocess==0.5
+requests==2.8.1
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.0.0
