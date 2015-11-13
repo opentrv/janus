@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$', 'opentrv.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^dataserver/', include('dataserver.urls')),
 ]

@@ -1,3 +1,5 @@
+import json
+import opentrv_sensor.models
 from django.utils import timezone
 from twisted.internet.protocol import DatagramProtocol as TwistedDatagramProtocol
 from twisted.internet import reactor
@@ -9,9 +11,14 @@ class DatagramProtocol(TwistedDatagramProtocol):
         self.log_filepath = log_filepath
 
     def datagramReceived(self, data, (host, port)):
-        self.log_file.write('{} Received: {}\n'.format(timezone.now().isoformat(), data))
+        measurement = opentrv_sensor.models.Measurement.create_from_udp(data)
+        if measurement:
+            self.log_file.write('{} Received: {}. Added to database.\n'.format(timezone.now().isoformat(), data))
+        else:
+            self.log_file.write('{} Received: {}. Unrecognised format, not added to the database.\n'.format(timezone.now().isoformat(), data))
         self.log_file.flush()
 
+        
 class UDPServer(object):
 
     def __init__(self, log_filepath):
