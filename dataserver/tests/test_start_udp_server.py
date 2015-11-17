@@ -8,8 +8,16 @@ from django.test import TestCase
 @mock.patch('dataserver.management.commands.start_udp_server.UDPServer')
 class StartUDPServerTest(TestCase):
     log_filepath = '.temp/tests/udp_server/udp_server.log'
+    error_log_filepath = '.temp/test/udp_server/udp_server_error.log'
     log_dir, log_filename = os.path.split(log_filepath)
 
+    def test_initialises_the_error_handler(self, UDPServer):
+
+        command = start_udp_server.Command()
+        command.handle(**{'log': self.log_filepath, 'error_log': self.error_log_filepath})
+
+        self.fail('TODO')
+    
     def test_creates_a_log_file_if_one_does_not_already_exist(self, UDPServer):
 
         self.assertFalse(os.path.exists(self.log_filepath))
@@ -36,7 +44,7 @@ class StartUDPServerTest(TestCase):
         command = start_udp_server.Command()
         command.handle(**{'log': self.log_filepath})
 
-        UDPServer.assert_called_once_with(self.log_filepath)
+        UDPServer.assert_called_once_with()
         UDPServer().start.assert_called_once_with()
 
     def __init__(self, *args, **kwargs):

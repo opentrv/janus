@@ -86,7 +86,7 @@ class FunctionalTest(LiveServerTestCase):
     def tearDown(self):
 
         # remove any log files generated
-        os.remove(self.log_filepath)
+        # os.remove(self.log_filepath)
 
         # kill the server process
         self.udp_server_process.kill()

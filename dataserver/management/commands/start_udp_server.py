@@ -1,4 +1,6 @@
+import logging
 from dataserver.udpserver import UDPServer
+from dataserver.udpserver import logger
 from django.core.management.base import BaseCommand
 
 
@@ -13,8 +15,11 @@ class Command(BaseCommand):
                 
     def handle(self, *args, **options):
         log_filepath = options['log']
-        f = open(log_filepath, 'ab')
-        UDPServer(log_filepath).start()
+        info_handler = logging.FileHandler(log_filepath)
+        info_handler.setLevel(logging.INFO)
+        logger.addHandler(info_handler)
+        info_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+        UDPServer().start()
 
 
 #         logger.setLevel(logging.INFO)

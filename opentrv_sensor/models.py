@@ -14,7 +14,6 @@ class Measurement(models.Model):
 
     @staticmethod
     def create_from_udp(msg):
-        # '[ "2015-01-01T00:00:43Z", "", {"@":"0a45","+":2,"vac|h":9} ]'
         json_object = json.loads(msg)
         datetime = date_parser.parse(json_object[0])
         sensor_id = json_object[2]['@']

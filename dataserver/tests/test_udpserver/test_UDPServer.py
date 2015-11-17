@@ -6,26 +6,22 @@ from django.test import TestCase
 class InitTest(TestCase):
     
     def test(self, DatagramProtocol):
-        log_filepath = 'log_filepath'
         
-        udpserver = UDPServer(log_filepath)
+        udpserver = UDPServer()
         datagram_protocol = DatagramProtocol.return_value
         
-        # instantiates DatagramProtocol with log filepath
-        DatagramProtocol.assert_called_once_with(log_filepath)
+        # instantiates DatagramProtocol
+        DatagramProtocol.assert_called_once_with()
 
         # creates a datagram protocol
         self.assertEqual(udpserver.protocol, datagram_protocol)
-
-        # sets log filepath
-        self.assertEqual(udpserver.log_filepath, log_filepath)
 
 @mock.patch('dataserver.udpserver.DatagramProtocol')
 @mock.patch('dataserver.udpserver.reactor')
 class StartTest(TestCase):
 
     def test(self, reactor, DatagramProtocol):
-        udpserver = UDPServer('log_filepath')
+        udpserver = UDPServer()
         udpserver.start()
         
         # binds the protocol to the reactor
