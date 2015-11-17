@@ -10,11 +10,12 @@ if not os.path.exists(tests_dir):
 
 class FunctionalTest(LiveServerTestCase):
     log_filename = 'udp_server.log'
+    error_log_filename = 'udp_server_errors.log'
 
     def test(self):
         
         # start the udp server
-        self.udp_server_process = subprocess.Popen(['python', 'manage.py', 'start_udp_server', '--log', self.log_filepath])
+        self.udp_server_process = subprocess.Popen(['python', 'manage.py', 'start_udp_server', '--log', self.log_filepath, '--error-log', self.error_log_filepath])
         time.sleep(1)
 
         # check the server started up okay
@@ -75,14 +76,14 @@ class FunctionalTest(LiveServerTestCase):
         self.test_dir = tests_dir + '/{}'.format(len(test_numbers))
         os.makedirs(self.test_dir)
         self.log_filepath = self.test_dir + '/{}'.format(self.log_filename)
+        self.error_log_filepath = self.test_dir + '/{}'.format(self.error_log_filename)
     
         LiveServerTestCase.__init__(self, *args, **kwargs)
         
     def setUp(self):
-        # if not os.path.exists(self.tests_dir):
-        #     os.makedirs
-        pass
-        
+        # clear the database
+        subprocess.check_call(['python', 'manage.py', 'flush', '--noinput'])        
+
     def tearDown(self):
 
         # remove any log files generated
@@ -90,3 +91,4 @@ class FunctionalTest(LiveServerTestCase):
 
         # kill the server process
         self.udp_server_process.kill()
+

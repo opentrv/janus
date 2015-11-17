@@ -9,44 +9,26 @@ class Command(BaseCommand):
                     
     def add_arguments(self, parser):
         parser.add_argument('--log', default='udp_server.log', help='udp server log')
+        parser.add_argument('--error-log', default='udp_server_errors.log', help='udp server errors log')
 
         # parser.add_argument('--start', help='Start datetime, ISO 8601 format (default: now)', default=None)
         # parser.add_argument('--frequency', type=int, help='Scraping Frequency in seconds (default: 1 day)', default=86400)
                 
     def handle(self, *args, **options):
+
+        logger.setLevel(logging.INFO)
+        
         log_filepath = options['log']
         info_handler = logging.FileHandler(log_filepath)
         info_handler.setLevel(logging.INFO)
         logger.addHandler(info_handler)
         info_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+
+        error_log_filepath = options['error_log']
+        error_handler = logging.FileHandler(error_log_filepath)
+        error_handler.setLevel(logging.WARNING)
+        logger.addHandler(error_handler)
+        error_handler.setFormatter(logging.Formatter('%(levelname)s: %(asctime)s: %(message)s'))
+
         UDPServer().start()
 
-
-#         logger.setLevel(logging.INFO)
-#         handler = logging.StreamHandler()
-#         handler.setLevel(logging.INFO)
-#         logger.addHandler(handler)
-#         formatter = logging.Formatter('%(levelname)s: %(name)s: %(message)s')
-#         handler.setFormatter(formatter)
-#         bg_logger.setLevel(logging.INFO)
-#         bg_logger.addHandler(handler)
-#         # logger.propagate = False
-#         # file_handler = logging.FileHandler(options['log'])
-#         # file_handler.setLevel(logging.INFO)
-#         # file_handler.setFormatter(formatter)
-#         # logger.addHandler(file_handler)
-#         # bg_logger.addHandler(file_handler)
-
-#         logger.info('Start BG data aggregation process')
-        
-#         while True:
-#             update_daily_summaries()
-#             time.sleep(86400.0)
-#         # start_datetime = convert_start_to_datetime(start=options['start'])
-#         # scraper = Scraper()
-#         # wait_till_start_time(start_datetime)
-#         # while True:
-#         #     previous_session = Session.get_previous_session()
-#         #     scraper.configure(start_datetime, previous_session)
-#         #     scraper.scrape()
-#         #     wait_till_next_session(options['frequency'])

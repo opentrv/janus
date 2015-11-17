@@ -70,6 +70,7 @@ class TestDatagramReceived(TestDatagramProtocol):
         udpprotocol = DatagramProtocol()
         udpprotocol.datagramReceived('data', ('host', port))
 
-        logger.info.assert_called_once_with('Received: data. Unrecognised format, not added to the database.')
+        # logger.info.assert_called_once_with('Received: data. Unrecognised format, not added to the database.')
         logger.error.assert_called_once_with('Failed to create Measurement, input: {}, with exception: {}'.format('data', creation_exception))
             
+        
