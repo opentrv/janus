@@ -15,8 +15,11 @@ class DatagramProtocol(TwistedDatagramProtocol):
 
     def datagramReceived(self, data, (host, port)):
         try:
-            measurement = opentrv_sensor.models.Measurement.create_from_udp(data)
+            measurements = opentrv_sensor.models.Measurement.create_from_udp(data)
             logger.info('Received: {}. Added to database.'.format(data))
+            if len(measurements['failure']):
+                logger.info('Some measurements failed: failures: {}, UDP message: data'.format(measurements['failure']))
+                logger.error('Some measurements failed: failures: {}, UDP message: data'.format(measurements['failure']))
         except Exception as e:
             # logger.info('Received: {}. Unrecognised format, not added to the database.'.format(data))
             logger.error('Failed to create Measurement, input: {}, with exception: {}'.format(data, e))

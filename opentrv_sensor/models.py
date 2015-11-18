@@ -4,6 +4,17 @@ from django.db import models
 
 # Create your models here.
 class Measurement(models.Model):
+    '''
+    vac = vacancy
+    T = temperature
+    B = Battery
+    L = light
+    v = valve open percent, 
+    H = relative humidity, 
+    tT = target temp, 
+    vC = cumulative valve travel, 
+    O = occupancy 0 = i don't know , 1 probably vacant, 2: probably occupancy, 3: definite occupancy
+    '''
     datetime = models.DateTimeField()
     sensor_id = models.CharField(max_length=10)
     type = models.CharField(max_length=20)
@@ -22,7 +33,7 @@ class Measurement(models.Model):
             if key != '@' and key != '+':
                 measurements[key] = val
 
-        output = []
+        output = {'success': [], 'failure': []}
         for key, val in measurements.iteritems():
             if '|' in key:
                 type_, units = key.split('|')
@@ -30,13 +41,42 @@ class Measurement(models.Model):
                 type_ = key
                 units = None
 
-            type_ = {'vac': 'vacancy', 'T': 'temperature', 'L': 'light'}[type_]
-            if type_ == 'temperature' and units == 'C16':
-                val = val / 16.
+            try:
+                type_ = {'vac': 'vacancy',
+                         'T': 'temperature',
+                         'L': 'light',
+                         'B': 'battery',
+                         'v': 'valve_open_percent',
+                         'H': 'relative_humidity',
+                         'tT': 'target_temperature',
+                         'vC': 'cumulative_valve_travel',
+                         'O': 'occupancy'
+                }[type_]
+                if type_ == 'temperature' or type_ == 'target_temperature':
+                    if units == 'C16':
+                        val = val / 16.
+                    elif units == 'C':
+                        pass
+                    else:
+                        raise Exception('Unrecognised unit of temperature')
+                if type_ == 'battery':
+                    if units == 'cV':
+                        val = val * 0.01
+                    elif units == 'V':
+                        pass
+                    elif units == 'mV':
+                        val = val * 0.001
+                    else:
+                        raise Exception('Unrecognised unit of battery')
 
-            measurement = Measurement(datetime=datetime, sensor_id=sensor_id, type=type_, value=val)
-            measurement.save()
-            output.append(measurement)
+                measurement = Measurement(datetime=datetime, sensor_id=sensor_id, type=type_, value=val)
+                measurement.save()
+                output['success'].append(measurement)
+            except KeyError as e:
+                output['failure'].append({
+                    'type': key,
+                    'value': val
+                })
 
         return output
 
