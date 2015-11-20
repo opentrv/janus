@@ -9,5 +9,6 @@ def api(request):
     response = {'status': 200, 'content': None, 'errors': []}
     date = datetime.datetime.strptime(request.GET['date'], '%Y-%m-%d')
     measurements = Measurement.objects.filter(datetime__year=date.year, datetime__month=date.month, datetime__day=date.day)
+    measurements = Measurement.to_dict(measurements)
     response['content'] = measurements
     return JsonResponse(response)

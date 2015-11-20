@@ -9,17 +9,43 @@ from opentrv_sensor import views
 @mock.patch('opentrv_sensor.views.Measurement')
 class TestAPI(TestCase):
 
-    def test(self, Measurement, JsonResponse):
+    def setUp(self):
+        self.request = HttpRequest()
+        self.request.GET['date'] = '2015-01-01'
 
-        request = HttpRequest()
-        request.GET['date'] = '2015-01-01'
-        
-        response = views.api(request)
+    def test_filters_measurement_objects_with_request_date(self, Measurement, JsonResponse):
+
+        response = views.api(self.request)
 
         date = datetime.datetime(2015, 1, 1).date()
         Measurement.objects.filter.assert_called_once_with(datetime__year=date.year, datetime__month=date.month, datetime__day=date.day)
         
 
-    def test2(self, Measurement, JsonResponse):
-        self.fail('TODO: API view')
-        # self.assertEqual(response['content'], [])
+    def test_converts_measurements_into_dictionaries(self, Measurement, JsonResponse):
+
+        measurements = mock.Mock()
+        Measurement.objects.filter.return_value = measurements
+
+        response = views.api(self.request)
+
+        Measurement.to_dict.assert_called_once_with(measurements)
+
+    def test_response_content_is_set_to_the_measurements(self, Measurement, JsonResponse):
+
+        measurements = mock.Mock()
+        Measurement.to_dict.return_value = measurements
+        
+        expected_dict = {'status': 200, 'content': measurements, 'errors': []}
+        
+        response = views.api(self.request)
+
+        JsonResponse.assert_called_once_with(expected_dict)
+
+    def test_returns_json_response(self, Measurement, JsonResponse):
+
+        expected_response = mock.Mock()
+        JsonResponse.return_value = expected_response
+
+        response = views.api(self.request)
+
+        self.assertEqual(response, expected_response)

@@ -23,6 +23,21 @@ class Measurement(models.Model):
     class Meta:
         unique_together = (("datetime", "type", "sensor_id"),)
 
+    @classmethod
+    def to_dict(cls, measurement):
+        if hasattr(measurement, '__iter__'): #isinstance(measurement, list):
+            measurements = measurement
+            output = []
+            for measurement in measurements:
+                output += [cls.to_dict(measurement)]
+            return output
+        return {
+            'datetime': measurement.datetime.isoformat(),
+            'sensor_id': measurement.sensor_id,
+            'type': measurement.type,
+            'value': measurement.value,
+        }
+
     @staticmethod
     def create_from_udp(msg):
         json_object = json.loads(msg)

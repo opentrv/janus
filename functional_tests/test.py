@@ -39,23 +39,29 @@ class FunctionalTest(LiveServerTestCase):
 
         # use the api to extract the data
         response = requests.get(os.path.join(self.live_server_url, 'dataserver', 'api', 'opentrv'), params={'date': '2015-01-01'})
-        expected = [
-            {
-                'datetime': "2015-01-01T00:00:43Z",
-                'sensor_id': "0a45",
-                'vacancy': 9
-            },
-            {
-                'datetime': "2015-01-01T00:00:43Z",
-                'sensor_id': "0a45",
-                'temperature': 12.5625
-            },
-            {
-                'datetime': "2015-01-01T00:00:43Z",
-                'sensor_id': "0a45",
-                'light': 0
-            }
-        ]
+        expected = {'status': 200, 'content':
+                    [
+                        {
+                            'datetime': "2015-01-01T00:00:43Z",
+                            'sensor_id': "0a45",
+                            'type': 'vacancy',
+                            'value': 9,
+                        },
+                        {
+                            'datetime': "2015-01-01T00:00:43Z",
+                            'sensor_id': "0a45",
+                            'type': 'temperature',
+                            'value': 12.5625,
+                        },
+                        {
+                            'datetime': "2015-01-01T00:00:43Z",
+                            'sensor_id': "0a45",
+                            'type': 'light',
+                            'value': 0,
+                        }
+                    ],
+                    'errors': []
+        }
 
         try:
             self.assertEqual(response.json(), expected)

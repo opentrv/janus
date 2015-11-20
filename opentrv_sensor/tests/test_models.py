@@ -1,6 +1,7 @@
 import os
 import mock
 import json
+import datetime
 import dateutil
 from opentrv_sensor.models import Measurement
 from django.test import TestCase
@@ -8,6 +9,35 @@ from django.utils import timezone
 
 class TestMeasurement(TestCase):
     pass
+
+class TestToDict(TestMeasurement):
+
+    def test(self):
+        measurement = Measurement(datetime=datetime.datetime(2015, 1, 1, 15, 11, 17), sensor_id='0a45', type='temperature', value=11.1)
+        expected_measurement_dict = {
+            'datetime': '2015-01-01T15:11:17',
+            'sensor_id': '0a45',
+            'type': 'temperature',
+            'value': 11.1
+        }
+        measurement_dict = Measurement.to_dict(measurement)
+        self.assertEqual(measurement_dict, expected_measurement_dict)
+
+        measurement2 = Measurement(datetime=datetime.datetime(2015, 1, 1, 16, 11, 17),
+                                   sensor_id='0a45',
+                                   type='temperature',
+                                   value=15.1)
+        expected_measurement2_dict = {
+            'datetime': '2015-01-01T16:11:17',
+            'sensor_id': '0a45',
+            'type': 'temperature',
+            'value': 15.1
+        }
+        
+        measurements = [measurement, measurement2]
+        
+        measurements_list = Measurement.to_dict(measurements)
+        self.assertEqual(measurements_list, [expected_measurement_dict, expected_measurement2_dict])
 
 class TestInit(TestMeasurement):
 
