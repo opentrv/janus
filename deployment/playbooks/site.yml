@@ -1,0 +1,40 @@
+---
+# file: site.yml
+- name: main playbook
+  hosts: web
+  tasks:
+    - name: install apt packages
+      apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
+      sudo: True
+      with_items:
+        - nginx
+        - postgresql
+        - python-dev
+        - python-pip
+        - python-psycopg2
+        - python-virtualenv
+        - lib32ncurses5-dev
+    - name: change /srv/opentrv group to vagrant and change permissions
+      sudo: True
+      file: path=/srv/opentrv group=vagrant mode=0775
+    - name: change /srv/opentrv/source group to vagrant and change permission
+      sudo: True
+      file: path=/srv/opentrv/source group=vagrant mode=0775
+    - name: install required python packages
+      pip: requirements=/srv/opentrv/source/requirements.txt virtualenv=/srv/opentrv/virtualenv
+    - name: create database directory
+      file: path=/srv/opentrv/database state=directory mode=0775
+    - name: sync the database, apply migrations, collect static content         
+      django_manage:
+        command: "{{ item }}"
+        app_path: "/srv/opentrv/source"
+        virtualenv: "/srv/opentrv/virtualenv"
+      with_items:
+        - migrate
+    - name: start django test server
+      django_manage:
+        command: runserver
+        app_path: "/srv/opentrv/source"
+        virtualenv: "/srv/opentrv/virtualenv"
+        
+  
