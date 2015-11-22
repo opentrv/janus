@@ -12,6 +12,7 @@
         - python-dev
         - python-pip
         - python-psycopg2
+        - libpq-dev
         - python-virtualenv
         - lib32ncurses5-dev
     - name: change /srv/opentrv group to vagrant and change permissions
@@ -31,10 +32,10 @@
         virtualenv: "/srv/opentrv/virtualenv"
       with_items:
         - migrate
-    - name: start django test server
-      django_manage:
-        command: runserver
-        app_path: "/srv/opentrv/source"
-        virtualenv: "/srv/opentrv/virtualenv"
+    # - name: start django test server
+    #   django_manage:
+    #     command: runserver
+    #     app_path: "/srv/opentrv/source"
+    #     virtualenv: "/srv/opentrv/virtualenv"
         
   

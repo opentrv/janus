@@ -11,11 +11,20 @@ if not os.path.exists(tests_dir):
 class FunctionalTest(LiveServerTestCase):
     log_filename = 'udp_server.log'
     error_log_filename = 'udp_server_errors.log'
+    maxDiff = None
 
     def test(self):
         
         # start the udp server
-        self.udp_server_process = subprocess.Popen(['python', 'manage.py', 'start_udp_server', '--log', self.log_filepath, '--error-log', self.error_log_filepath])
+        self.udp_server_process = subprocess.Popen([
+            'python',
+            'manage.py',
+            'start_udp_server',
+            '--log', self.log_filepath,
+            '--error-log', self.error_log_filepath,
+            '--settings',
+            'opentrv.settings.test',
+        ])
         time.sleep(1)
 
         # check the server started up okay
@@ -42,22 +51,22 @@ class FunctionalTest(LiveServerTestCase):
         expected = {'status': 200, 'content':
                     [
                         {
-                            'datetime': "2015-01-01T00:00:43Z",
+                            'datetime': "2015-01-01T00:00:43+00:00",
                             'sensor_id': "0a45",
                             'type': 'vacancy',
-                            'value': 9,
+                            'value': 9.0,
                         },
                         {
-                            'datetime': "2015-01-01T00:00:43Z",
+                            'datetime': "2015-01-01T00:00:43+00:00",
                             'sensor_id': "0a45",
                             'type': 'temperature',
                             'value': 12.5625,
                         },
                         {
-                            'datetime': "2015-01-01T00:00:43Z",
+                            'datetime': "2015-01-01T00:00:43+00:00",
                             'sensor_id': "0a45",
                             'type': 'light',
-                            'value': 0,
+                            'value': 0.0,
                         }
                     ],
                     'errors': []
@@ -88,7 +97,8 @@ class FunctionalTest(LiveServerTestCase):
         
     def setUp(self):
         # clear the database
-        subprocess.check_call(['python', 'manage.py', 'flush', '--noinput'])        
+        # subprocess.check_call(['python', 'manage.py', 'flush', '--noinput'])
+        pass
 
     def tearDown(self):
 
