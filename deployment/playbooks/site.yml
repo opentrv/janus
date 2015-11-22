@@ -2,6 +2,8 @@
 # file: site.yml
 - name: main playbook
   hosts: web
+  vars:
+    db_password: "secret"
   tasks:
     - name: install apt packages
       apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
@@ -15,16 +17,56 @@
         - libpq-dev
         - python-virtualenv
         - lib32ncurses5-dev
-    - name: change /srv/opentrv group to vagrant and change permissions
+
+    - name: create opentrv group
+      group: name=opentrv state=present gid=510
       sudo: True
-      file: path=/srv/opentrv group=vagrant mode=0775
-    - name: change /srv/opentrv/source group to vagrant and change permission
+
+    - name: create opentrv user
+      user: name=opentrv group=opentrv uid=510
       sudo: True
-      file: path=/srv/opentrv/source group=vagrant mode=0775
+    - user: name=opentrv groups=sudo append=yes
+      sudo: True
+
+    - name: change /srv/opentrv group to opentrv and change permissions
+      file: path=/srv/opentrv owner=opentrv group=opentrv
+      sudo: True
+
+    - name: add vagrant to opentrv group
+      user: name=vagrant groups=opentrv append=yes
+      sudo: True
+
     - name: install required python packages
       pip: requirements=/srv/opentrv/source/requirements.txt virtualenv=/srv/opentrv/virtualenv
+      become: yes
+      become_user: opentrv
+
     - name: create database directory
-      file: path=/srv/opentrv/database state=directory mode=0775
+      file: path=/srv/opentrv/database state=directory group=opentrv
+      become: yes
+      become_user: opentrv
+
+    - name: create logs directory
+      file: path=/srv/opentrv/logs state=directory group=opentrv
+      become: yes
+      become_user: opentrv
+      
+    - name: create postgres user
+      postgresql_user:
+        name: opentrv
+        password: "{{ db_password }}"
+        role_attr_flags: CREATEDB
+      sudo: True
+      sudo_user: postgres
+
+    - name: create the postgres database
+      postgresql_db:
+        name: "opentrv_db"
+        owner: opentrv
+        encoding: UTF8
+      sudo: True
+      sudo_user: postgres
+
     - name: sync the database, apply migrations, collect static content         
       django_manage:
         command: "{{ item }}"
@@ -32,10 +74,37 @@
         virtualenv: "/srv/opentrv/virtualenv"
       with_items:
         - migrate
-    # - name: start django test server
-    #   django_manage:
-    #     command: runserver
-    #     app_path: "/srv/opentrv/source"
-    #     virtualenv: "/srv/opentrv/virtualenv"
-        
-  
+      become: yes
+      become_user: opentrv
+
+    - name: setup gunicorn configuration
+      template: src=../templates/gunicorn.conf.j2 dest=/etc/init/opentrv_gunicorn.conf
+      notify: restart gunicorn
+      sudo: True
+
+    - name: set the nginx config file
+      template: src=../templates/nginx.conf.j2 dest=/etc/nginx/sites-available/opentrv
+      notify: restart nginx
+      sudo: True
+
+    - name: enable opentrv in nginx
+      file:
+        dest: /etc/nginx/sites-enabled/opentrv
+        src: /etc/nginx/sites-available/opentrv
+        state: link
+      sudo: True
+      notify: restart nginx
+
+    - name: delete nginx default config file
+      file: path=/etc/nginx/sites-enabled/default state=absent
+      notify: restart nginx
+      sudo: True
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
+      sudo: True
+
+    - name: restart gunicorn
+      service: name=opentrv_gunicorn state=restarted
+      sudo: True
