@@ -43,6 +43,7 @@ class FunctionalTest(LiveServerTestCase):
         # send message to the udp server
         msg = "Hello world"
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
+        # TODO: Needs to be able to send to a remote UDP server, i.e. take a host argument
 
         # check message is written to the log file
         f = open(self.log_filepath, 'rb')
@@ -54,7 +55,6 @@ class FunctionalTest(LiveServerTestCase):
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
 
         # use the api to extract the data
-        # response = requests.get(DATA_API_URL, params={'date': '2015-01-01'})
         expected = {'status': 200, 'content':
                     [
                         {
@@ -82,7 +82,6 @@ class FunctionalTest(LiveServerTestCase):
         self.check_data_response({'date': '2015-01-01'}, expected)
 
         # filter on datetime-first and datetime-last
-        # self.fail('TODO: filter on datetime-first and datetime-last')
         params={'datetime-first': '2015-01-01T00:00:40', 'datetime-last': '2015-01-01T00:00:50'}
         expected = expected # user previous expected
         self.check_data_response(params, expected)
@@ -125,18 +124,11 @@ class FunctionalTest(LiveServerTestCase):
         self.log_filepath = self.test_dir + '/{}'.format(self.log_filename)
         self.error_log_filepath = self.test_dir + '/{}'.format(self.error_log_filename)
         LiveServerTestCase.__init__(self, *args, **kwargs)
-    
         
     def setUp(self):
         self.DATA_API_URL = os.path.join(self.live_server_url, 'dataserver', 'api', 'opentrv', 'data')
-        # clear the database
-        # subprocess.check_call(['python', 'manage.py', 'flush', '--noinput'])
-        pass
 
     def tearDown(self):
-
-        # remove any log files generated
-        # os.remove(self.log_filepath)
 
         # kill the server process
         self.udp_server_process.kill()

@@ -10,9 +10,6 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--log', default='udp_server.log', help='udp server log')
         parser.add_argument('--error-log', default='udp_server_errors.log', help='udp server errors log')
-
-        # parser.add_argument('--start', help='Start datetime, ISO 8601 format (default: now)', default=None)
-        # parser.add_argument('--frequency', type=int, help='Scraping Frequency in seconds (default: 1 day)', default=86400)
                 
     def handle(self, *args, **options):
 

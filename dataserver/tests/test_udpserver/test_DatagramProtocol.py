@@ -49,7 +49,6 @@ class TestDatagramReceived(TestDatagramProtocol):
 
         logger.error.assert_called_once_with('Received: data, from 127.0.0.1. Failed to create Measurement with exception: {}'.format(creation_exception))
             
-    # TODO: Test measurement failures are put into the error log
     def test_measurement_failures_added_to_error_log(self, mock_timezone, Measurement, logger):
         datetime = timezone.now()
         mock_timezone.now.return_value = datetime
