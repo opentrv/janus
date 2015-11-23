@@ -90,8 +90,11 @@ class FunctionalTest(LiveServerTestCase):
         params={'datetime-first': '2015-01-01T00:00:50', 'datetime-last': '2015-01-01T00:00:55'}
         expected = {'status': 200, 'content': [], 'errors': []}
         self.check_data_response(params, expected)
-        
-        self.fail('TODO: graceful handling of invalid datetime-first and datetime-last parameters')
+
+        # graceful handling of invalid datetimes
+        params={'datetime-first': 'invalid datetime', 'datetime-last': 'invalid datetime'}
+        expected = {'status': 300, 'content': None, 'errors': ['error']}
+        self.check_data_response(params, expected)
 
         self.fail('TODO: filter on measurement type(s)')
         self.fail('TODO: graceful handling of invalid measurement type(s)')
