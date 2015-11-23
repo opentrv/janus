@@ -22,7 +22,7 @@ class TestDatagramReceived(TestDatagramProtocol):
         port = 9999
         
         udpprotocol = DatagramProtocol()
-        udpprotocol.datagramReceived(msg, ('host', port))
+        udpprotocol.datagramReceived(msg, ('127.0.0.1', port))
 
         Measurement.create_from_udp.assert_called_once_with(msg)
     
@@ -33,9 +33,9 @@ class TestDatagramReceived(TestDatagramProtocol):
         Measurement.create_from_udp.return_value = mock.Mock()
         
         udpprotocol = DatagramProtocol()
-        udpprotocol.datagramReceived('data', ('host', port))
+        udpprotocol.datagramReceived('data', ('127.0.0.1', port))
 
-        logger.info.assert_called_once_with('Received: data. Added to database.')
+        logger.info.assert_called_once_with('Received: data, from 127.0.0.1. Added to database.')
 
     def test_unsuccessful_measurement_creation_log_message(self, mock_timezone, Measurement, logger):
         datetime = timezone.now()
@@ -45,9 +45,9 @@ class TestDatagramReceived(TestDatagramProtocol):
         Measurement.create_from_udp.side_effect = creation_exception
         
         udpprotocol = DatagramProtocol()
-        udpprotocol.datagramReceived('data', ('host', port))
+        udpprotocol.datagramReceived('data', ('127.0.0.1', port))
 
-        logger.error.assert_called_once_with('Failed to create Measurement, input: {}, with exception: {}'.format('data', creation_exception))
+        logger.error.assert_called_once_with('Received: data, from 127.0.0.1. Failed to create Measurement with exception: {}'.format(creation_exception))
             
     # TODO: Test measurement failures are put into the error log
     def test_measurement_failures_added_to_error_log(self, mock_timezone, Measurement, logger):
@@ -57,9 +57,9 @@ class TestDatagramReceived(TestDatagramProtocol):
         Measurement.create_from_udp.return_value = {'success': [mock.Mock()], 'failure': [{'type': 'x', 'val': 0}]}
         
         udpprotocol = DatagramProtocol()
-        udpprotocol.datagramReceived('data', ('host', port))
+        udpprotocol.datagramReceived('data', ('127.0.0.1', port))
 
-        logger.info.assert_called_with('Some measurements failed: failures: {}, UDP message: data'.format(Measurement.create_from_udp.return_value['failure']))
-        logger.error.assert_called_once_with('Some measurements failed: failures: {}, UDP message: data'.format(Measurement.create_from_udp.return_value['failure']))
+        logger.info.assert_called_with('Received: data, from 127.0.0.1. Some measurements failed: failures: {}'.format(Measurement.create_from_udp.return_value['failure']))
+        logger.error.assert_called_once_with('Received: data, from 127.0.0.1. Some measurements failed: failures: {}'.format(Measurement.create_from_udp.return_value['failure']))
         
 

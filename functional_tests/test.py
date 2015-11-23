@@ -47,7 +47,7 @@ class FunctionalTest(LiveServerTestCase):
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
 
         # use the api to extract the data
-        response = requests.get(os.path.join(self.live_server_url, 'dataserver', 'api', 'opentrv'), params={'date': '2015-01-01'})
+        response = requests.get(os.path.join(self.live_server_url, 'dataserver', 'api', 'opentrv', 'data'), params={'date': '2015-01-01'})
         expected = {'status': 200, 'content':
                     [
                         {
@@ -76,6 +76,25 @@ class FunctionalTest(LiveServerTestCase):
             self.assertEqual(response.json(), expected)
         except ValueError as e:
             raise Exception('{}\n{}'.format(e, response.text))
+
+
+        self.fail('TODO: filter on datetime-first and datetime-last')
+        self.fail('TODO: graceful handling of invalid datetime-first and datetime-last parameters')
+
+        self.fail('TODO: filter on measurement type(s)')
+        self.fail('TODO: graceful handling of invalid measurement type(s)')
+
+        self.fail('TODO: filter on sensor_id(s)')
+        self.fail('TODO: graceful handling of invalid sensor_id(s)')
+
+        self.fail('TODO: get a list of measurement types (/dataserver/api/opentrv/data/types)')
+        self.fail('TODO: filter on datetime-first, datetime-last and sensor_id(s)')
+
+        self.fail('TODO: get a list of sensor_ids (/dataserver/api/opentrv/data/sensor_ids)')
+        self.fail('TODO: filter on datetime-first, datetime-last and type(s)')
+        
+        self.fail('TODO: get the first and last dates of avaiable data (/dataserver/api/opentrv/data/dates)')
+        self.fail('TODO: filter on measurement type(s) and sensor_id(s)')
         
         self.fail('TODO')
 
