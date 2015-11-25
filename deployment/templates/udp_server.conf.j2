@@ -1,0 +1,11 @@
+description "Gunicorn server for opentrv"
+
+start on net-device-up
+stop on shutdown
+
+respawn
+
+setuid opentrv
+chdir /srv/opentrv/source
+
+exec /srv/opentrv/virtualenv/bin/python manage.py start_udp_server --log /srv/opentrv/logs/udp_server.log --error-log /srv/opentrv/logs/udp_server_errors.log

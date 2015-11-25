@@ -40,6 +40,9 @@
       become: yes
       become_user: opentrv
       when: use_git
+      notify:
+        - restart gunicorn
+        - restart udp_server
 
     - name: create database directory
       file: path=/srv/opentrv/database state=directory group=opentrv
@@ -105,6 +108,11 @@
       notify: restart nginx
       sudo: True
 
+    - name: configure the udp server
+      template: src=../templates/udp_server.conf.j2 dest=/etc/init/udp_server.conf
+      notify: restart udp_server
+      sudo: True
+
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
@@ -112,4 +120,8 @@
 
     - name: restart gunicorn
       service: name=opentrv_gunicorn state=restarted
+      sudo: True
+
+    - name: restart udp_server
+      service: name=udp_server state=restarted
       sudo: True
