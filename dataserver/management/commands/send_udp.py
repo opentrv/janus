@@ -7,9 +7,9 @@ class Command(BaseCommand):
                     
     def add_arguments(self, parser):
         parser.add_argument('msg', nargs='?', default='Hello world')
-        # TODO: Needs to take a host argument
+        parser.add_argument('--host', default='127.0.0.1')
+        parser.add_argument('--port', default=9999)
         
     def handle(self, *args, **options):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(options['msg'], ('127.0.0.1', 9999))
-        # TODO: Needs to be able to send to a remote host
+        sock.sendto(options['msg'], (options['host'], options['port']))
