@@ -1,14 +1,16 @@
 ---
 # file: site.yml
 - name: main playbook
-n  hosts: web
+  hosts: web
   vars:
     db_password: "secret"
+    opentrv_repo_url: https://github.com/dvoong/opentrv
   tasks:
     - name: install apt packages
       apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
       sudo: True
       with_items:
+        - git
         - nginx
         - postgresql
         - python-dev
@@ -23,25 +25,21 @@ n  hosts: web
       sudo: True
 
     - name: create opentrv user
-      user: name=opentrv group=opentrv uid=510
-      sudo: True
-    # combine these commands
-    - user: name=opentrv groups=sudo append=yes
+      user: name=opentrv group=opentrv uid=510 groups=sudo append=yes
       sudo: True
 
-    - name: change /srv/opentrv group to opentrv and change permissions
-      file: path=/srv/opentrv owner=opentrv group=opentrv
+    - name: create opentrv directory
+      file: path=/srv/opentrv state=directory owner=opentrv group=opentrv
       sudo: True
+      when: use_git
 
-    # not necessary
-    - name: add vagrant to opentrv group
-      user: name=vagrant groups=opentrv append=yes
-      sudo: True
-
-    - name: install required python packages
-      pip: requirements=/srv/opentrv/source/requirements.txt virtualenv=/srv/opentrv/virtualenv
+    # get the code here. Use git hub for a remote host or let the vm do the shared folder thing
+    # if no source directory exists do a git clone else do a git pull
+    - name: check out the repository on the host
+      git: repo=https://github.com/dvoong/opentrv dest=/srv/opentrv/source accept_hostkey=yes
       become: yes
       become_user: opentrv
+      when: use_git
 
     - name: create database directory
       file: path=/srv/opentrv/database state=directory group=opentrv
@@ -53,6 +51,11 @@ n  hosts: web
       become: yes
       become_user: opentrv
       
+    - name: install required python packages
+      pip: requirements=/srv/opentrv/source/requirements.txt virtualenv=/srv/opentrv/virtualenv
+      become: yes
+      become_user: opentrv
+
     - name: create postgres user
       postgresql_user:
         name: opentrv
@@ -68,11 +71,6 @@ n  hosts: web
         encoding: UTF8
       sudo: True
       sudo_user: postgres
-
-    # get the code here. Use git hub for a remote host or let the vm do the shared folder thing
-    # if no source directory exists do a git clone else do a git pull
-    # - name: check out the repository on the host
-    #   git: repo=https://github.com/dvoong/opentrv dest=/srv/opentrv/source accept_hostkey=yes
 
     - name: sync the database, apply migrations, collect static content         
       django_manage:
