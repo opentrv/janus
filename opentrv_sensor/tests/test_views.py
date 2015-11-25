@@ -108,5 +108,10 @@ class TestBuildQuery(TestCase):
         self.assertEqual(query, expected_query)
 
     def test_invalid_args_returns_an_invalid_args_exception(self):
+        request = HttpRequest()
+        request.GET['datetime-first'] = 'invalid datetime'
+        request.GET['datetime-last'] = '2015-01-01 00:00:50'
 
-        self.fail('TODO: exception needs to have errors attribute')
+        with self.assertRaises(Exception) as e:
+            query = views.build_query(request.GET)
+            self.assertTrue(hasattr('errors', e))

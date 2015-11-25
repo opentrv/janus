@@ -92,8 +92,9 @@ class FunctionalTest(LiveServerTestCase):
         self.check_data_response(params, expected)
 
         # graceful handling of invalid datetimes
-        params={'datetime-first': 'invalid datetime', 'datetime-last': 'invalid datetime'}
-        expected = {'status': 300, 'content': None, 'errors': ['error']}
+        params={'datetime-first': 'yo', 'datetime-last': 'xo'}
+        expected = {'status': 300, 'content': None, 'errors': ['ValueError: Unknown string format, datetime-first: yo',
+                                                               'ValueError: Unknown string format, datetime-last: xo']}
         self.check_data_response(params, expected)
 
         self.fail('TODO: filter on measurement type(s)')
