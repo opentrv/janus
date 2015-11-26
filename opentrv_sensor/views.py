@@ -5,37 +5,54 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils import timezone
+from django.db.models import Q
 
+class Query(object):
+    def __init__(self):
+        self.args = []
+        self.kwargs = {}
+    def __repr__(self):
+        return 'args: {}, kwargs: {}'.format(self.args, self.kwargs)
+    def __eq__(self, other):
+        return self.args == other.args and self.kwargs == other.kwargs
+        
 def build_query(args):
-    query = {}
+    query = Query()
     errors = []
     if 'date' in args:
         date = datetime.datetime.strptime(args['date'], '%Y-%m-%d')
-        query['datetime__year'] = date.year
-        query['datetime__month'] = date.month
-        query['datetime__day'] = date.day
+        query.kwargs['datetime__year'] = date.year
+        query.kwargs['datetime__month'] = date.month
+        query.kwargs['datetime__day'] = date.day
 
     if 'datetime-first' in args:
         try:
             datetime_first = timezone.make_aware(date_parser.parse(args['datetime-first']))
-            query['datetime__gte'] = datetime_first
+            query.kwargs['datetime__gte'] = datetime_first
         except Exception as e:
             errors.append('{}: {}, datetime-first: {}'.format(type(e).__name__, e, args['datetime-first']))
 
     if 'datetime-last' in args:
         try:
             datetime_last = timezone.make_aware(date_parser.parse(args['datetime-last']))
-            query['datetime__lte'] = datetime_last
+            query.kwargs['datetime__lte'] = datetime_last
         except Exception as e:
             errors.append('{}: {}, datetime-last: {}'.format(type(e).__name__, e, args['datetime-last']))
 
-    # spike
-    if 'measurement' in args:
-        try:
-            pass
-        except:
-            pass
+    if 'type' in args:
+        types = args.getlist('type')
+        q = Q(type=types[0])
+        for type_ in types[1:]:
+            q = q | Q(type=type_)
+        query.args.append(q)
 
+    if 'sensor-id' in args:
+        types = args.getlist('sensor-id')
+        q = Q(sensor_id=types[0])
+        for type_ in types[1:]:
+            q = q | Q(sensor_id=type_)
+        query.args.append(q)
+        
     if len(errors):
         exception = Exception('Invalid arguments')
         exception.errors = errors
@@ -47,11 +64,82 @@ def api(request):
     response = {'status': 200, 'content': None, 'errors': []}
     try:
         query = build_query(request.GET)
-        measurements = Measurement.objects.filter(**query)
+        measurements = Measurement.objects.filter(*query.args, **query.kwargs)
         measurements = Measurement.to_dict(measurements)
         response['content'] = measurements
     except Exception as e:
         response['status'] = 300
-        response['errors'].extend(e.errors)
+        if hasattr(e, 'errors'):
+            response['errors'].extend(e.errors)
+        else:
+            response['errors'].append(str(e))
 
+    return JsonResponse(response)
+
+def types(request):
+    # TODO: Test this method
+    # Refactor with the api method
+    response = {'status': 200, 'content': [], 'errors': []}
+    types = []
+
+    try:
+        query = build_query(request.GET)
+        measurements = Measurement.objects.filter(*query.args, **query.kwargs)
+    except Exception as e:
+        response['status'] = 300
+        if hasattr(e, 'errors'):
+            response['errors'].extend(e.errors)
+        else:
+            response['errors'].append(str(e))
+        return JsonResponse(response)
+
+    for x in measurements.values('type').distinct():
+        types.extend(x.values())
+    response['content'] = types
+    return JsonResponse(response)
+
+def sensors(request):
+    # TODO: Test this method
+    # Refactor with the api method
+    response = {'status': 200, 'content': [], 'errors': []}
+    sensors = []
+
+    try:
+        query = build_query(request.GET)
+        measurements = Measurement.objects.filter(*query.args, **query.kwargs)
+    except Exception as e:
+        response['status'] = 300
+        if hasattr(e, 'errors'):
+            response['errors'].extend(e.errors)
+        else:
+            response['errors'].append(str(e))
+        return JsonResponse(response)
+
+    for x in measurements.values('sensor_id').distinct():
+        sensors.extend(x.values())
+    response['content'] = sensors
+    return JsonResponse(response)
+    
+def dates(request):
+    # TODO: Test this method
+    # Refactor with the api method
+    response = {'status': 200, 'content': [], 'errors': []}
+    datetimes = []
+
+    try:
+        query = build_query(request.GET)
+        measurements = Measurement.objects.filter(*query.args, **query.kwargs)
+    except Exception as e:
+        response['status'] = 300
+        if hasattr(e, 'errors'):
+            response['errors'].extend(e.errors)
+        else:
+            response['errors'].append(str(e))
+        return JsonResponse(response)
+
+    if len(measurements):
+        datetimes.append(measurements.order_by('datetime').first().datetime.isoformat())
+        datetimes.append(measurements.order_by('datetime').last().datetime.isoformat())
+
+    response['content'] = datetimes
     return JsonResponse(response)

@@ -3,8 +3,10 @@ import datetime
 import mock
 from django.http import HttpRequest
 from django.test import TestCase
+from django.db.models import Q
 from opentrv_sensor import views
 from django.utils import timezone
+from opentrv_sensor.views import Query
 
 @mock.patch('opentrv_sensor.views.build_query')
 @mock.patch('opentrv_sensor.views.JsonResponse')
@@ -52,12 +54,12 @@ class TestAPI(TestCase):
 
     def test_filters_mesurement_with_query(self, Measurement, JsonResponse, build_query):
 
-        query = {}
+        query = Query()
         build_query.return_value = query
         
         response = views.api(self.request)
 
-        Measurement.objects.filter.assert_called_once_with(**query)
+        Measurement.objects.filter.assert_called_once_with(*query.args, **query.kwargs)
 
     def test_when_build_query_raises_an_exception_exception_errors_appended_to_response_errors(self, Measurement, JsonResponse, build_query):
 
@@ -87,10 +89,11 @@ class TestBuildQuery(TestCase):
 
         request = HttpRequest()
         request.GET['date'] = '2015-01-01'
-        expected_query = {'datetime__year': 2015, 'datetime__month': 1, 'datetime__day': 1}
+        expected_query = Query()
+        expected_query.kwargs = {'datetime__year': 2015, 'datetime__month': 1, 'datetime__day': 1}
 
         query = views.build_query(request.GET)
-
+        
         self.assertEqual(query, expected_query)
 
     def test_builds_query_with_first_and_last_datetime(self):
@@ -98,7 +101,8 @@ class TestBuildQuery(TestCase):
         request = HttpRequest()
         request.GET['datetime-first'] = '2015-01-01 00:00:40'
         request.GET['datetime-last'] = '2015-01-01 00:00:50'
-        expected_query = {
+        expected_query = Query()
+        expected_query.kwargs = {
             'datetime__gte': timezone.make_aware(datetime.datetime(2015, 1, 1, 0, 0, 40)),
             'datetime__lte': timezone.make_aware(datetime.datetime(2015, 1, 1, 0, 0, 50)),
         }
@@ -115,3 +119,21 @@ class TestBuildQuery(TestCase):
         with self.assertRaises(Exception) as e:
             query = views.build_query(request.GET)
             self.assertTrue(hasattr('errors', e))
+
+    def test_if_type_in_request_GET_build_query_with_it(self):
+        request = HttpRequest()
+        request.GET['type'] = u'a'
+        request.GET.update({'type': u'b'})
+
+        query = views.build_query(request.GET)
+
+        self.assertEqual(str(query.args), str([Q(type=u'a') | Q(type=u'b')]))
+
+    def test_if_sensor_id_in_request_GET_build_query_with_it(self):
+        request = HttpRequest()
+        request.GET['sensor-id'] = u'a'
+        request.GET.update({'sensor-id': u'b'})
+
+        query = views.build_query(request.GET)
+
+        self.assertEqual(str(query.args), str([Q(sensor_id=u'a') | Q(sensor_id=u'b')]))

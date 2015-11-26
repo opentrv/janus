@@ -2,6 +2,7 @@ import time
 import os
 import subprocess
 import requests
+import copy
 from django.test import TestCase, LiveServerTestCase
 
 tests_dir = '.temp/tests'
@@ -78,6 +79,7 @@ class FunctionalTest(LiveServerTestCase):
                     ],
                     'errors': []
         }
+        initial_measurements = copy.deepcopy(expected['content']) # save this for later tests
 
         self.check_data_response({'date': '2015-01-01'}, expected)
 
@@ -97,15 +99,42 @@ class FunctionalTest(LiveServerTestCase):
                                                                'ValueError: Unknown string format, datetime-last: xo']}
         self.check_data_response(params, expected)
 
-        self.fail('TODO: filter on measurement type(s)')
-        self.fail('TODO: graceful handling of invalid measurement type(s)')
+        #filter on measurement type(s)
+        params={'type': ['temperature', 'light']}
+        expected={'status': 200, 'content':[
+            {
+                'datetime': "2015-01-01T00:00:43+00:00",
+                'sensor_id': "0a45",
+                'type': 'temperature',
+                'value': 12.5625,
+            },
+            {
+                'datetime': "2015-01-01T00:00:43+00:00",
+                'sensor_id': "0a45",
+                'type': 'light',
+                'value': 0.0,
+            }
+        ], 'errors': []}
+        self.check_data_response(params, expected)
 
-        self.fail('TODO: filter on sensor_id(s)')
-        self.fail('TODO: graceful handling of invalid sensor_id(s)')
+        # measurements that do not exist return nothing
+        params={'type': ['does not exist']}
+        expected={'status': 200, 'content': [], 'errors': []}
+        self.check_data_response(params, expected)
 
-        self.fail('TODO: get a list of measurement types (/dataserver/api/opentrv/data/types)')
-        self.fail('TODO: filter on datetime-first, datetime-last and sensor_id(s)')
+        # filter on sensor_id(s)
+        params={'sensor-id': ['0a45', '0a46']}
+        expected = {'status': 200, 'content': initial_measurements, 'errors': []}
+        self.check_data_response(params, expected)
 
+        # get a list of measurement types
+        response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/types')
+        types = response.json()['content']
+        self.assertEqual(len(types), 3)
+        self.assertIn('temperature', types)
+        self.assertIn('vacancy', types)
+        self.assertIn('light', types)
+        
         self.fail('TODO: get a list of sensor_ids (/dataserver/api/opentrv/data/sensor_ids)')
         self.fail('TODO: filter on datetime-first, datetime-last and type(s)')
         
