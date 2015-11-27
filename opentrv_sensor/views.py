@@ -98,7 +98,7 @@ def types(request):
     response['content'] = types
     return JsonResponse(response)
 
-def sensors(request):
+def sensor_ids(request):
     # TODO: Test this method
     # Refactor with the api method
     response = {'status': 200, 'content': [], 'errors': []}

@@ -64,7 +64,7 @@ class Measurement(models.Model):
                          'v': 'valve_open_percent',
                          'H': 'relative_humidity',
                          'tT': 'target_temperature',
-                         'vC': 'cumulative_valve_travel',
+                         'vC': 'valve_travel',
                          'O': 'occupancy'
                 }[type_]
                 if type_ == 'temperature' or type_ == 'target_temperature':
