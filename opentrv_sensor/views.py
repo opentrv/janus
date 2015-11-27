@@ -1,7 +1,8 @@
 import datetime
+import markdown
 from dateutil import parser as date_parser
 from opentrv_sensor.models import Measurement
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils import timezone
@@ -59,6 +60,12 @@ def build_query(args):
         raise exception
 
     return query
+
+def readme(request):
+    f = open('opentrv_sensor/README.md')
+    print 'f:', f
+    text = f.read()
+    return HttpResponse(markdown.markdown(text))
 
 def api(request):
     response = {'status': 200, 'content': None, 'errors': []}
