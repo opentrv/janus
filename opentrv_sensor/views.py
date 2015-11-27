@@ -77,8 +77,6 @@ def api(request):
     return JsonResponse(response)
 
 def types(request):
-    # TODO: Test this method
-    # Refactor with the api method
     response = {'status': 200, 'content': [], 'errors': []}
     types = []
 
@@ -99,8 +97,6 @@ def types(request):
     return JsonResponse(response)
 
 def sensor_ids(request):
-    # TODO: Test this method
-    # Refactor with the api method
     response = {'status': 200, 'content': [], 'errors': []}
     sensors = []
 
@@ -121,8 +117,6 @@ def sensor_ids(request):
     return JsonResponse(response)
     
 def dates(request):
-    # TODO: Test this method
-    # Refactor with the api method
     response = {'status': 200, 'content': [], 'errors': []}
     datetimes = []
 

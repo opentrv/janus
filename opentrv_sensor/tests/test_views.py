@@ -8,6 +8,15 @@ from opentrv_sensor import views
 from django.utils import timezone
 from opentrv_sensor.views import Query
 
+class TestListSensorIds(TestCase):
+    pass
+
+class TestListMeasurementTypes(TestCase):
+    pass
+
+class TestListDatetimeRange(TestCase):
+    pass
+
 @mock.patch('opentrv_sensor.views.build_query')
 @mock.patch('opentrv_sensor.views.JsonResponse')
 @mock.patch('opentrv_sensor.views.Measurement')
