@@ -2,6 +2,7 @@ import time
 import os
 import subprocess
 import requests
+import copy
 from django.test import TestCase, LiveServerTestCase
 
 tests_dir = '.temp/tests'
@@ -19,7 +20,8 @@ class FunctionalTest(LiveServerTestCase):
             self.assertEqual(response.json(), expected)
         except ValueError as e:
             raise Exception('{}\n{}'.format(e, response.text))
-    
+
+    # TODO: Tests will fail when not in GMT timezone +00:00. Fix me.
     def test(self):
         
         # start the udp server
@@ -78,6 +80,7 @@ class FunctionalTest(LiveServerTestCase):
                     ],
                     'errors': []
         }
+        initial_measurements = copy.deepcopy(expected['content']) # save this for later tests
 
         self.check_data_response({'date': '2015-01-01'}, expected)
 
@@ -97,20 +100,73 @@ class FunctionalTest(LiveServerTestCase):
                                                                'ValueError: Unknown string format, datetime-last: xo']}
         self.check_data_response(params, expected)
 
-        self.fail('TODO: filter on measurement type(s)')
-        self.fail('TODO: graceful handling of invalid measurement type(s)')
+        #filter on measurement type(s)
+        params={'type': ['temperature', 'light']}
+        expected={'status': 200, 'content':[
+            {
+                'datetime': "2015-01-01T00:00:43+00:00",
+                'sensor_id': "0a45",
+                'type': 'temperature',
+                'value': 12.5625,
+            },
+            {
+                'datetime': "2015-01-01T00:00:43+00:00",
+                'sensor_id': "0a45",
+                'type': 'light',
+                'value': 0.0,
+            }
+        ], 'errors': []}
+        self.check_data_response(params, expected)
 
-        self.fail('TODO: filter on sensor_id(s)')
-        self.fail('TODO: graceful handling of invalid sensor_id(s)')
+        # measurements that do not exist return nothing
+        params={'type': ['does not exist']}
+        expected={'status': 200, 'content': [], 'errors': []}
+        self.check_data_response(params, expected)
 
-        self.fail('TODO: get a list of measurement types (/dataserver/api/opentrv/data/types)')
-        self.fail('TODO: filter on datetime-first, datetime-last and sensor_id(s)')
-
-        self.fail('TODO: get a list of sensor_ids (/dataserver/api/opentrv/data/sensor_ids)')
-        self.fail('TODO: filter on datetime-first, datetime-last and type(s)')
+        # Add more data
+        msgs = [
+            '[ "2015-01-01T00:01:13Z", "", {"@":"819c","T|C16":71,"L":5,"B|cV":256} ]',
+            '[ "2015-01-01T00:01:19Z", "", {"@":"414a","+":4,"vac|h":3,"v|%":0,"tT|C":7,"vC|%":50} ]',
+            '[ "2015-01-01T00:02:17Z", "", {"@":"0d49","+":2,"vac|h":22,"T|C16":203,"L":0} ]',
+            '[ "2015-01-01T00:02:31Z", "", {"@":"2d1a","+":1,"tT|C":7,"vC|%":102,"T|C16":292} ]',
+            '[ "2015-01-01T00:03:17Z", "", {"@":"0d49","+":3,"B|mV":2601,"v|%":0,"tT|C":7,"O":1} ]',
+        ]
+        for msg in msgs:
+            subprocess.check_call(['python', 'manage.py', 'send_udp', msg])            
         
-        self.fail('TODO: get the first and last dates of avaiable data (/dataserver/api/opentrv/data/dates)')
-        self.fail('TODO: filter on measurement type(s) and sensor_id(s)')
+        # filter on sensor_id(s)
+        params={'sensor-id': ['0a45', '0a46']}
+        expected = {'status': 200, 'content': initial_measurements, 'errors': []}
+        self.check_data_response(params, expected)
+
+        # get a list of measurement types
+        response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/types')
+        types = response.json()['content']
+        self.assertEqual(len(types), 8, types)
+        for type_ in ['temperature',
+                      'vacancy',
+                      'light',
+                      'target_temperature',
+                      'battery',
+                      'occupancy',
+                      'valve_open_percent',
+                      'valve_travel']:
+            self.assertIn(type_, types, type_)
+        
+        # get a list of sensor_ids
+        response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/sensor-ids')
+        self.assertEqual(len(response.json()['content']), 5, response.json()['content'])
+        for sensor_id in ['0a45', '819c', '414a', '0d49', '2d1a']:
+            self.assertIn(sensor_id, response.json()['content'])
+        # filter sensor_ids on measurement type
+        response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/sensor-ids', params={'type': 'battery'})
+        self.assertEqual(len(response.json()['content']), 2, response.json()['content'])
+        for sensor_id in ['819c', '0d49']:
+            self.assertIn(sensor_id, response.json()['content'])
+        
+        # get first and last datetimes
+        response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/dates')
+        self.assertEqual(response.json()['content'], ['2015-01-01T00:00:43+00:00', '2015-01-01T00:03:17+00:00'])
         
         self.fail('TODO')
 

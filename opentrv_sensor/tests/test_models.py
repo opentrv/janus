@@ -95,7 +95,7 @@ class TestCreateFromUDP(TestMeasurement):
             mock.call(datetime=expected_datetime, sensor_id="414a", type="vacancy", value=3),
             mock.call(datetime=expected_datetime, sensor_id="414a", type="valve_open_percent", value=0),
             mock.call(datetime=expected_datetime, sensor_id="414a", type="target_temperature", value=7),
-            mock.call(datetime=expected_datetime, sensor_id="414a", type="cumulative_valve_travel", value=50),
+            mock.call(datetime=expected_datetime, sensor_id="414a", type="valve_travel", value=50),
         ]
         mock_measurements = [mock.Mock(), mock.Mock(), mock.Mock(), mock.Mock()]
         MockMeasurement.side_effect = mock_measurements
