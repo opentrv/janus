@@ -31,7 +31,6 @@
     - name: create opentrv directory
       file: path=/srv/opentrv state=directory owner=opentrv group=opentrv
       sudo: True
-      when: use_git
 
     # get the code here. Use git hub for a remote host or let the vm do the shared folder thing
     # if no source directory exists do a git clone else do a git pull
