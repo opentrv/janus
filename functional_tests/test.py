@@ -193,3 +193,10 @@ class FunctionalTest(LiveServerTestCase):
         # kill the server process
         self.udp_server_process.kill()
 
+class BrentTest(LiveServerTestCase):
+
+    fixtures = ['2015-01-01.json']
+
+    def test(self):
+
+        self.fail('TODO: selenium tests')
