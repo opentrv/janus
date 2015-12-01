@@ -71,7 +71,7 @@ def api(request):
     response = {'status': 200, 'content': None, 'errors': []}
     try:
         query = build_query(request.GET)
-        measurements = Measurement.objects.filter(*query.args, **query.kwargs)
+        measurements = Measurement.objects.filter(*query.args, **query.kwargs).order_by('datetime')
         measurements = Measurement.to_dict(measurements)
         response['content'] = measurements
     except Exception as e:
