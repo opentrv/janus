@@ -17,7 +17,7 @@ class DatagramProtocol(TwistedDatagramProtocol):
                 logger.info('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
                 logger.error('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
         except Exception as e:
-            logger.error('Received: {}, from {}. Failed to create Measurement with exception: {}'.format(data, host, e))
+            logger.error('Received: {}, from {}. Failed to create Measurement with exception: {}: {}'.format(data, host, e.__class__.__name__, e))
         
 class UDPServer(object):
 
