@@ -19,7 +19,21 @@ class FunctionalTest(LiveServerTestCase):
     def check_data_response(self, params, expected):
         response = requests.get(self.DATA_API_URL, params=params)
         try:
-            self.assertEqual(response.json(), expected)
+            response = response.json()
+            self.assertEqual(response['status'], expected['status'])
+            self.assertEqual(response['errors'], expected['errors'])
+            if response['content'] == None:
+                self.assertEqual(expected['content'], response['content'])
+            else:
+                for measurement in response['content']:
+                    x = {
+                        'type': measurement['type'],
+                        'value': measurement['value'],
+                        'sensor_id': measurement['sensor_id'],
+                    }
+                    self.assertIn(x, expected['content'])
+                self.assertEqual(len(response['content']), len(expected['content']))
+            # self.assertEqual(response.json(), expected)
         except ValueError as e:
             raise Exception('{}\n{}'.format(e, response.text))
 
@@ -59,36 +73,58 @@ class FunctionalTest(LiveServerTestCase):
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
 
         # use the api to extract the data
-        expected = {'status': 200, 'content':
-                    [
-                        {
-                            'datetime': "2015-01-01T00:00:43+00:00",
-                            'sensor_id': "0a45",
-                            'type': 'vacancy',
-                            'value': 9.0,
-                        },
-                        {
-                            'datetime': "2015-01-01T00:00:43+00:00",
-                            'sensor_id': "0a45",
-                            'type': 'temperature',
-                            'value': 12.5625,
-                        },
-                        {
-                            'datetime': "2015-01-01T00:00:43+00:00",
-                            'sensor_id': "0a45",
-                            'type': 'light',
-                            'value': 0.0,
-                        }
-                    ],
-                    'errors': []
+        expected = {
+            'status': 200,
+            'errors': [],
+            'content': [
+                {
+                    'sensor_id': "0a45",
+                    'type': 'vacancy',
+                    'value': 9.0,
+                },
+                {
+                    'sensor_id': "0a45",
+                    'type': 'temperature',
+                    'value': 12.5625,
+                },
+                {
+                    'sensor_id': "0a45",
+                    'type': 'light',
+                    'value': 0.0,
+                }
+            ]
         }
+                
+        # expected = {'status': 200, 'content':
+        #             [
+        #                 {
+        #                     'datetime': "2015-01-01T00:00:43+00:00",
+        #                     'sensor_id': "0a45",
+        #                     'type': 'vacancy',
+        #                     'value': 9.0,
+        #                 },
+        #                 {
+        #                     'datetime': "2015-01-01T00:00:43+00:00",
+        #                     'sensor_id': "0a45",
+        #                     'type': 'temperature',
+        #                     'value': 12.5625,
+        #                 },
+        #                 {
+        #                     'datetime': "2015-01-01T00:00:43+00:00",
+        #                     'sensor_id': "0a45",
+        #                     'type': 'light',
+        #                     'value': 0.0,
+        #                 }
+        #             ],
+        #             'errors': []
+        # }
         initial_measurements = copy.deepcopy(expected['content']) # save this for later tests
 
         self.check_data_response({}, expected)
-        self.check_data_response({'date': '2015-01-01'}, expected)
+        self.check_data_response({'date': datetime.date.today().isoformat()}, expected)
 
         # filter on datetime-first and datetime-last
-        params={'datetime-first': '2015-01-01T00:00:40', 'datetime-last': '2015-01-01T00:00:50'}
+        params={'datetime-first': '2015-01-01T00:00:40', 'datetime-last': datetime.date.today() + datetime.timedelta(days=1)}# '2015-01-01T00:00:50'}
         expected = expected # user previous expected
         self.check_data_response(params, expected)
 

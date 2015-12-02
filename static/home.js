@@ -1,3 +1,5 @@
+var timer_id;
+
 function getKeys(object){
     var keys = []
     for(var key in object){
@@ -67,6 +69,13 @@ $(document).ready(function(){
     var graphQuantitySelector = graphSection.find("select#quantity-selector");
 
     var data = [];
+
+    $("#live-graph-button").click(function(e){
+	$(this).toggleClass("down-button");
+	if($(this).hasClass("down-button")){
+	    
+	}
+    });
     
     dataFilterSection.find("form").submit(function(e){
     	console.log("form submission");
@@ -187,6 +196,50 @@ $(document).ready(function(){
     	    console.log(svg);
     	} else {
     	}
+
+    }
+
+    function getData(){
+	console.log("getData");
+	var datetimeFirst = dataFilterForm.find("#datetime-first-input").val();
+	var datetimeLast = new Date().toISOString(); //dataFilterForm.find("#datetime-last-input").val();
+	var sensorId = dataFilterForm.find("#sensor-id-input option:selected").text()
+	console.log(datetimeLast);
+	var x = $.get("dataserver/api/opentrv/data", {
+	    "datetime-first": datetimeFirst,
+	    "datetime-last": datetimeLast,
+	    "sensor-id": sensorId,
+	}).done(function(response){
+	    
+	    data = response.content;
+
+	    console.log("response:");
+	    console.log(response);
+	    console.log("data:");
+	    console.log(data);
+	    
+	    if(data.length){
+		// get the quantities
+		var measurement_types = getMeasurementTypes(data)
+		
+		populateTable(data, measurement_types);
+		
+		// for(var i in measurement_types){
+		// 	var option_tag = "<option value=\"" + measurement_types[i] + "\">";
+		// 	option_tag += measurement_types[i];
+		// 	option_tag += "</option>";
+		// 	$("#quantity-selector").append(option_tag);
+		// }
+		$("#quantity-selector").change();
+	    } else {
+		console.log("no data");
+	    }
+	});
+    }
+    
+    function startTimer(interval){
+	console.log("startTimer: interval: " + interval);
+	return setInterval(getData, interval);
     }
 
     $.get("dataserver/api/opentrv/data/sensor-ids", function(response){
@@ -197,6 +250,8 @@ $(document).ready(function(){
 	}
 	$("#data-filter-section form").submit()
 	// $("#property-selection-section button").first().click();
+	startTimer(10000);
+	// clearInterval(timer_id);
     });
     
 });

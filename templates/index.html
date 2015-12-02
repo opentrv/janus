@@ -64,6 +64,24 @@
       stroke: #000;
       shape-rendering: crispEdges;
       }
+
+      .up-button {
+      background: #ccc;
+      cursor: pointer;
+      border-top: solid 2px #eaeaea;
+      border-left: solid 2px #eaeaea;
+      border-bottom: solid 2px #777;
+      border-right: solid 2px #777;
+      padding: 5px 5px;  
+      }
+
+      .down-button {
+      background: #bbb;
+      border-top: solid 2px #777;
+      border-left: solid 2px #777;
+      border-bottom:solid 2px  #eaeaea;
+      border-right: solid 2px #eaeaea;
+      }
     </style>
     
   </head>
@@ -146,28 +164,31 @@
 
 	<section id="data-section">
 	  <h2>Data</h2>
-	  <section id="data-filter-section">
-	    <h3>Filter</h3>
-	    <form>
-	      <table>
-		<tr>
-		  <th>First Datetime</th>
-		  <td><input id="datetime-first-input" name="datetime-first" value="2015-01-01 00:00:00"></td>
-		</tr>
-		<tr>
-		  <th>Last Datetime</th>
-		  <td><input id="datetime-last-input" name="datetime-last" value="2015-01-02 00:00:00"></td>
-		</tr>
-		<tr>
-		  <th>Sensor</th>
-		  <td><select id="sensor-id-input" name="sensor-id"></select></td>
-		</tr>
-		<tr>
-		  <th></th><td><input type="submit"></td>
-		</tr>
-	      </table>
-	    </form>
-	  </section> <!-- filter-section" -->
+	  <div id="data-controls-div">
+	    <button id="live-graph-button" type="button">Live Graphs</button>
+	    <section id="data-filter-section">
+	      <h3>Filter</h3>
+	      <form>
+		<table>
+		  <tr>
+		    <th>First Datetime</th>
+		    <td><input id="datetime-first-input" name="datetime-first" value="2015-12-02 00:00:00"></td>
+		  </tr>
+		  <tr>
+		    <th>Last Datetime</th>
+		    <td><input id="datetime-last-input" name="datetime-last" value="2015-12-03 00:00:00"></td>
+		  </tr>
+		  <tr>
+		    <th>Sensor</th>
+		    <td><select id="sensor-id-input" name="sensor-id"></select></td>
+		  </tr>
+		  <tr>
+		    <th></th><td><input type="submit"></td>
+		  </tr>
+		</table>
+	      </form>
+	    </section> <!-- filter-section" -->
+	  </div> <!-- data-controls-div" -->
 	  <div id="data-table-div" style="overflow:auto; max-height: 400px;">
 	    <table id="data-table" border="0">
 	      <!-- <tr> -->
