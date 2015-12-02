@@ -14,6 +14,46 @@ function getMeasurementTypes(measurements){
     return getKeys(measurement_types_dict);
 }
 
+function populateTable(measurements, measurement_types){
+    console.log("populateTable");
+    console.log("measurement_types: " + measurement_types);
+    console.log(measurements);
+    var table = $("#data-table");
+    table.empty();
+    headers_tag = "<tr><th>Datetime</th>"
+    for(var i in measurement_types){
+	headers_tag += "<th> | " + measurement_types[i] + "</th>";
+    }
+    headers_tag += "</tr>"
+    table.append(headers_tag);
+    // group measurements by datetime
+    measurement_dates = {}
+    for(var i in measurements){
+	var measurement = measurements[i];
+	if(!(measurement.datetime in measurement_dates)){
+	    measurement_dates[measurement.datetime] = [measurement];
+	} else {
+	    measurement_dates[measurement.datetime].push(measurement);
+	}
+    }
+
+    for(var i in measurement_dates){
+	var row_tag = "<tr><td>" + i + "</td>";
+	for(var j in measurement_types){
+	    var column_tag = "<td></td>"
+	    for(var k in measurement_dates[i]){
+		if(measurement_dates[i][k].type == measurement_types[j]){
+		    column_tag = "<td>" + measurement_dates[i][k].value + "</td>";
+		    break;
+		}
+	    }
+	    row_tag += column_tag;
+	}
+	row_tag += "</tr>";
+	table.append(row_tag);
+    }
+}
+
 $(document).ready(function(){
     
     var validQuantities = ["Temperature", "Humidity", "Light", "Occupancy", "Battery"]
@@ -31,6 +71,9 @@ $(document).ready(function(){
     dataFilterSection.find("form").submit(function(e){
     	console.log("form submission");
 	e.preventDefault();
+	var table = $("#data-table");
+	table.empty();
+	$("#graph").empty();
 	$("#quantity-selector").empty();
 	var datetimeFirst = dataFilterForm.find("#datetime-first-input").val();
 	var datetimeLast = dataFilterForm.find("#datetime-last-input").val();
@@ -44,7 +87,9 @@ $(document).ready(function(){
 	    if(data.length){
 		// get the quantities
 		var measurement_types = getMeasurementTypes(data)
-		console.log(measurement_types.length);
+
+		populateTable(data, measurement_types);
+		
 		for(var i in measurement_types){
 		    var option_tag = "<option value=\"" + measurement_types[i] + "\">";
 		    option_tag += measurement_types[i];
@@ -52,6 +97,8 @@ $(document).ready(function(){
 		    $("#quantity-selector").append(option_tag);
 		}
 		$("#quantity-selector").change();
+	    } else {
+		console.log("no data");
 	    }
 	});
 
@@ -144,7 +191,6 @@ $(document).ready(function(){
 
     $.get("dataserver/api/opentrv/data/sensor-ids", function(response){
 	var sensors = response.content;
-	console.log(sensors);
 	for(var i in sensors){
 	    var option_tag = "<option value=\"" + sensors[i] + "\">" + sensors[i] + "</option>"
 	    $("#sensor-id-input").append(option_tag);
