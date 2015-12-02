@@ -10,6 +10,11 @@ from django.utils import timezone
 class TestMeasurement(TestCase):
     pass
 
+class TestConvertDatetime(TestCase):
+
+    def test(self):
+        self.fail('TODO')
+
 class TestToDict(TestMeasurement):
 
     def test(self):

@@ -1,9 +1,11 @@
 import json
 from dateutil import parser as date_parser
 from django.db import models
+from django.utils import timezone
 
 def get_current_datetime():
-    pass
+    print timezone.now()
+    return timezone.now()
 
 def convert_datetime(datetime_string):
     pass

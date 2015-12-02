@@ -1,5 +1,7 @@
 import time
+import datetime
 import os
+import mock
 import subprocess
 import requests
 import copy
@@ -23,7 +25,7 @@ class FunctionalTest(LiveServerTestCase):
 
     # TODO: Tests will fail when not in GMT timezone +00:00. Fix me.
     def test(self):
-        
+
         # start the udp server
         self.udp_server_process = subprocess.Popen([
             'python',
@@ -53,7 +55,7 @@ class FunctionalTest(LiveServerTestCase):
         self.assertIn(msg, line)
 
         # send some opentrv data to the udp server
-        msg = '[ "2015-01-01T00:00:43Z", "", {"@":"0a45","+":2,"vac|h":9,"T|C16":201,"L":0} ]'
+        msg = '{"@":"0a45","+":2,"vac|h":9,"T|C16":201,"L":0}'
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
 
         # use the api to extract the data
@@ -82,6 +84,7 @@ class FunctionalTest(LiveServerTestCase):
         }
         initial_measurements = copy.deepcopy(expected['content']) # save this for later tests
 
+        self.check_data_response({}, expected)
         self.check_data_response({'date': '2015-01-01'}, expected)
 
         # filter on datetime-first and datetime-last
