@@ -73,8 +73,11 @@ $(document).ready(function(){
     $("#live-graph-button").click(function(e){
 	$(this).toggleClass("down-button");
 	if($(this).hasClass("down-button")){
-	    
-	}
+	    timer_id = startTimer(10000);
+	} else {
+	    console.log("clearInterval: " + timer_id);
+	    clearInterval(timer_id);
+	}	    
     });
     
     dataFilterSection.find("form").submit(function(e){
@@ -250,8 +253,6 @@ $(document).ready(function(){
 	}
 	$("#data-filter-section form").submit()
 	// $("#property-selection-section button").first().click();
-	startTimer(10000);
-	// clearInterval(timer_id);
     });
     
 });
