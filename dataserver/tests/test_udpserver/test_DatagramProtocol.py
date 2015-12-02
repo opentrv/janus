@@ -47,7 +47,7 @@ class TestDatagramReceived(TestDatagramProtocol):
         udpprotocol = DatagramProtocol()
         udpprotocol.datagramReceived('data', ('127.0.0.1', port))
 
-        logger.error.assert_called_once_with('Received: data, from 127.0.0.1. Failed to create Measurement with exception: {}'.format(creation_exception))
+        logger.error.assert_called_once_with('Received: data, from 127.0.0.1. Failed to create Measurement with exception: {}: {}'.format(creation_exception.__class__.__name__, creation_exception))
             
     def test_measurement_failures_added_to_error_log(self, mock_timezone, Measurement, logger):
         datetime = timezone.now()

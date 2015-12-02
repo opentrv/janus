@@ -32,7 +32,7 @@ class TestAPI(TestCase):
 
         response = views.api(self.request)
 
-        Measurement.to_dict.assert_called_once_with(measurements)
+        Measurement.to_dict.assert_called_once_with(measurements.order_by())
 
     def test_response_content_is_set_to_the_measurements(self, Measurement, JsonResponse, build_query):
         self.request.GET['date'] = '2015-01-01'
