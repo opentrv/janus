@@ -81,7 +81,7 @@
         virtualenv: "/srv/opentrv/virtualenv"
       with_items:
         - migrate
-	- collectstatic
+        - collectstatic
       become: yes
       become_user: opentrv
 
