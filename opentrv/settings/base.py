@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'dataserver',
     'opentrv_sensor',
+    'opentrv_sensor_brent',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -2,7 +2,7 @@
 
 ## API Methods
 
-### `GET data`
+### `GET /dataserver/api/opentrv/data`
 
 Returns a list of measurements.
 
@@ -14,7 +14,7 @@ Parameters
 * `type`: *optional*, *multivalue*: Filter measurements on the measurement type(s), e.g. "temperature"
 * `sensor-id`: *optional*, *multivalue*: Filter measurements on the sensor-id(s)
 
-### `GET data/types`
+### `GET /dataserver/api/opentrv/data/types`
 
 Returns a list of measurement types in a set of measurements.
 
@@ -25,7 +25,7 @@ Parameters
 * `type`: *optional*, *multivalue*: Filter measurements on the measurement type(s), e.g. "temperature"
 * `sensor-id`: *optional*, *multivalue*: Filter measurements on the sensor-id(s)
 
-### `GET data/sensor-ids`
+### `GET /dataserver/api/opentrv/data/sensor-ids`
 
 Returns a list of sensor-ids in a set of measurements.
 
@@ -36,7 +36,7 @@ Parameters
 * `type`: *optional*, *multivalue*: Filter measurements on the measurement type(s), e.g. "temperature"
 * `sensor-id`: *optional*, *multivalue*: Filter measurements on the sensor-id(s)
 
-### `GET data/dates`
+### `GET /dataserver/api/opentrv/data/dates`
 
 Returns a the first and last datetimes in a set of measurements.
 

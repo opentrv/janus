@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en-GB"> <!-- First two characters are the language, if there are more than two then the rest describe the dialect -->
+  <head>
+    <title>OpenTRV Brent Trial</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'base.css' %}" />
+
+    <!-- JQuery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <!-- AngularJS -->
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>-->
+
+    <!-- MathJax -->
+    <!--<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>-->
+
+    <!-- d3js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+    <!-- moments -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.js"></script>
+    
+    <meta charset="utf-8" />
+    <meta name="description" content="OpenTRV Brent trial." />
+    <meta author="David Voong" />
+
+    <style>
+      #properties {
+      width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      }
+      
+      .property {
+      text-align: center;
+      }
+
+      td {
+      text-align: right;
+      }
+
+      svg {
+      border: 1px solid black;
+      margin-bottom: 25px;
+      }
+
+      panel-footer {
+      margin-top: 50px;
+      }
+
+      .line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+      }
+
+      .axis path,
+      .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+      }
+
+      .up-button {
+      background: #ccc;
+      cursor: pointer;
+      border-top: solid 2px #eaeaea;
+      border-left: solid 2px #eaeaea;
+      border-bottom: solid 2px #777;
+      border-right: solid 2px #777;
+      padding: 5px 5px;  
+      }
+
+      .down-button {
+      background: #bbb;
+      border-top: solid 2px #777;
+      border-left: solid 2px #777;
+      border-bottom:solid 2px  #eaeaea;
+      border-right: solid 2px #eaeaea;
+      }
+    </style>
+    
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+	<div class="navbar-header" style="">
+	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	    <span class="sr-only">Toggle navigation</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </button>
+	  <a class="navbar-brand" href="#" style="">
+	    <img src="{% static 'opentrv/opentrv.100.png' %}" style="width: 100px; top: -10px; position: relative">
+	    <span style="position: relative; top: -10px; right: -10px">Brent Trial</span>
+	  </a>
+	</div>
+	<!-- <div id="navbar" class="navbar-collapse collapse"> -->
+	<!--   <ul class="nav navbar-nav"> -->
+	<!--     <li class="active"><a href="#">Home</a></li> -->
+	<!--     <li><a href="#about">About</a></li> -->
+	<!--     <li><a href="#contact">Contact</a></li> -->
+	<!--     <li class="dropdown"> -->
+	<!--       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a> -->
+	<!--       <ul class="dropdown-menu"> -->
+	<!-- 	<li><a href="#">Action</a></li> -->
+	<!-- 	<li><a href="#">Another action</a></li> -->
+	<!-- 	<li><a href="#">Something else here</a></li> -->
+	<!-- 	<li role="separator" class="divider"></li> -->
+	<!-- 	<li class="dropdown-header">Nav header</li> -->
+	<!-- 	<li><a href="#">Separated link</a></li> -->
+	<!-- 	<li><a href="#">One more separated link</a></li> -->
+	<!--       </ul> -->
+	<!--     </li> -->
+	<!--   </ul> -->
+	  <ul class="nav navbar-nav navbar-right">
+            <li><a href="mailto:opentrv@opentrv.org.uk" target="_blank">Contact</a></li>
+	    <!-- <li><a href="../navbar/">Default</a></li> -->
+	    <!-- <li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li> -->
+	    <!-- <li><a href="../navbar-fixed-top/">Fixed top</a></li> -->
+	  </ul>
+	<!-- </div><\!--/.nav-collapse -\-> -->
+      </div>
+    </nav>
+    
+    <div class="container">
+      <section id="introduction-section">
+	<h2>Introduction</h2>
+	<p>In the filter section below click on the <b>sensor</b> dropdown menu and select sensor <code>e1ec</code>, hit the <code>Submit</code> button and wait for the data to be collected (should take ~3 seconds. A warning message will be displayed if no data is found). Once you have found some data you can plot various quantities e.g. <code>temperature</code> or <code>light</code> by selecting the quantity in the dropdown menu.</p>
+
+	<p>The Brent trial uses the OpenTRV dataserver api, more detail on the api can be found <a href="/dataserver/api/opentrv">here</a>.</p>
+	
+      </section>
+      <!-- <section id="properties-section"> -->
+      <!-- 	<div class="row" style="text-align: center"> -->
+      <!-- 	  <h2>Properties</h2> -->
+      <!-- 	</div> -->
+
+      <!-- 	<section id="property-selection-section"> -->
+      <!-- 	  <button class="selected">Property1</button> -->
+      <!-- 	  <button>Property2</button> -->
+      <!-- 	  <button>Property3</button> -->
+      <!-- 	</section> <\!-- property-selection-section -\-> -->
+
+      <!-- 	<section id="property-details-section"> -->
+      <!-- 	  <h2>Property Details</h2> -->
+      <!-- 	  <table> -->
+      <!-- 	    <tbody> -->
+      <!-- 	      <tr> -->
+      <!-- 		<th>Name</th> -->
+      <!-- 		<td></td> -->
+      <!-- 	      </tr> -->
+      <!-- 	      <tr> -->
+      <!-- 		<th>Postcode</th> -->
+      <!-- 		<td></td> -->
+      <!-- 	      </tr> -->
+      <!-- 	      <tr> -->
+      <!-- 		<th>Type</th> -->
+      <!-- 		<td></td> -->
+      <!-- 	      </tr> -->
+      <!-- 	  </table> -->
+      <!-- 	</section> <\!-- property-details-section -\-> -->
+
+	<section id="data-section">
+	  <h2>Data</h2>
+	  <div id="data-controls-div">
+	    <button id="live-graph-button" type="button">Live Graphs</button>
+	    <section id="data-filter-section">
+	      <h3>Filter</h3>
+	      <form>
+		<table>
+		  <tr>
+		    <th>First Datetime</th>
+		    <td><input id="datetime-first-input" name="datetime-first" value="2015-12-02 00:00:00"></td>
+		  </tr>
+		  <tr>
+		    <th>Last Datetime</th>
+		    <td><input id="datetime-last-input" name="datetime-last" value="2015-12-03 00:00:00"></td>
+		  </tr>
+		  <tr>
+		    <th>Sensor</th>
+		    <td><select id="sensor-id-input" name="sensor-id"></select></td>
+		  </tr>
+		  <tr>
+		    <th></th><td><input type="submit"></td>
+		  </tr>
+		</table>
+		<p id="filter-warnings" style="color:red"></p>
+	      </form>
+	    </section> <!-- filter-section" -->
+	  </div> <!-- data-controls-div" -->
+
+	  <section id="graph-section">
+	    <table>
+	      <tr>
+		<th>Quantity: </th>
+		<td>
+		  <select id="quantity-selector">
+		  </select>
+		</td>
+	      </tr>
+	    </table>
+	    <div id="graph-div">
+	      <svg id="graph">
+	      </svg>
+	    </div> <!-- graph-div -->
+	  </section> <!-- graph-section -->
+
+	  <div id="data-table-div" style="overflow:auto; max-height: 400px;">
+	    <table id="data-table" border="0">
+	      <!-- <tr> -->
+	      <!-- 	<th>Datetime</th> -->
+	      <!-- 	<th>Temperature (C)</th> -->
+	      <!-- 	<th>Humidity (%)</th> -->
+	      <!-- 	<th>Light</th> -->
+	      <!-- 	<th>Occupancy (H)</th> -->
+	      <!-- 	<th>Battery</th> -->
+	      <!-- </tr> -->
+	    </table>
+	  </div> <!-- data-table-div -->
+	  
+	</section> <!-- data-section -->
+
+    <script src="{% static 'brent/home.js' %}"></script>
+    
+  </body>
+  
+</html>

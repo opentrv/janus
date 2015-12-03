@@ -87,6 +87,8 @@ $(document).ready(function(){
 	table.empty();
 	$("#graph").empty();
 	$("#quantity-selector").empty();
+	$("#filter-warnings").css("color", "black");
+	$("#filter-warnings").text("loading");
 	var datetimeFirst = dataFilterForm.find("#datetime-first-input").val();
 	var datetimeLast = dataFilterForm.find("#datetime-last-input").val();
 	var sensorId = dataFilterForm.find("#sensor-id-input option:selected").text()
@@ -97,6 +99,7 @@ $(document).ready(function(){
 	}).done(function(response){
 	    data = response.content;
 	    if(data.length){
+		
 		// get the quantities
 		var measurement_types = getMeasurementTypes(data)
 
@@ -109,8 +112,19 @@ $(document).ready(function(){
 		    $("#quantity-selector").append(option_tag);
 		}
 		$("#quantity-selector").change();
+		$("#filter-warnings").text("");
 	    } else {
-		console.log("no data");
+		$("#filter-warnings").css("color", "red");
+		$("#filter-warnings").text("No data found. Try adjusting the date filters.");
+		$.get("/dataserver/api/opentrv/data/dates?sensor-id=" + sensorId, function(response){
+		    if(response.status == 200){
+			if(response.content.length == 2){
+			    var first = response.content[0];
+			    var last = response.content[1];
+			    $("#filter-warnings").text($("#filter-warnings").text() + " Earliest found mesaurement for sensor " + sensorId + ": " + first + ", latest measurement: " + last);
+			}
+		    }
+		});
 	    }
 	});
 
@@ -235,7 +249,7 @@ $(document).ready(function(){
 		// }
 		$("#quantity-selector").change();
 	    } else {
-		console.log("no data");
+		alert("No data!");
 	    }
 	});
     }

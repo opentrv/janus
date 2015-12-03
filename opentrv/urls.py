@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^$', 'opentrv.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^dataserver/', include('dataserver.urls')),
+    url(r'^brent/', include('opentrv_sensor_brent.urls')),
 ]
