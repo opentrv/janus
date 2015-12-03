@@ -24,7 +24,7 @@ function populateTable(measurements, measurement_types){
     table.empty();
     headers_tag = "<tr><th>Datetime</th>"
     for(var i in measurement_types){
-	headers_tag += "<th> | " + measurement_types[i] + "</th>";
+	headers_tag += "<th>" + measurement_types[i] + "</th>";
     }
     headers_tag += "</tr>"
     table.append(headers_tag);
@@ -249,7 +249,6 @@ $(document).ready(function(){
 		// }
 		$("#quantity-selector").change();
 	    } else {
-		alert("No data!");
 	    }
 	});
     }

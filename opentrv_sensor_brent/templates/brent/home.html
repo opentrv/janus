@@ -82,6 +82,14 @@
       border-bottom:solid 2px  #eaeaea;
       border-right: solid 2px #eaeaea;
       }
+
+      <!-- th { -->
+      <!-- align: center; -->
+      <!-- } -->
+
+      td{
+      text-align: left;
+      }
     </style>
     
   </head>
@@ -174,14 +182,14 @@
 	<section id="data-section">
 	  <h2>Data</h2>
 	  <div id="data-controls-div">
-	    <button id="live-graph-button" type="button">Live Graphs</button>
+	    <button id="live-graph-button" type="button" class="btn btn-primary">Live Graphs</button>
 	    <section id="data-filter-section">
 	      <h3>Filter</h3>
 	      <form>
-		<table>
+		<table class="table">
 		  <tr>
 		    <th>First Datetime</th>
-		    <td><input id="datetime-first-input" name="datetime-first" value="2015-12-02 00:00:00"></td>
+		    <td><input id="datetime-first-input" name="datetime-first" value="2015-01-01 00:00:00"></td>
 		  </tr>
 		  <tr>
 		    <th>Last Datetime</th>
@@ -192,7 +200,7 @@
 		    <td><select id="sensor-id-input" name="sensor-id"></select></td>
 		  </tr>
 		  <tr>
-		    <th></th><td><input type="submit"></td>
+		    <th></th><td><input type="submit" class="btn btn-primary"></td>
 		  </tr>
 		</table>
 		<p id="filter-warnings" style="color:red"></p>
@@ -200,24 +208,24 @@
 	    </section> <!-- filter-section" -->
 	  </div> <!-- data-controls-div" -->
 
-	  <section id="graph-section">
-	    <table>
+	  <section id="graph-section" style="text-align: center;">
+	    <table class="table">
 	      <tr>
 		<th>Quantity: </th>
 		<td>
-		  <select id="quantity-selector">
+		  <select id="quantity-selector" class="form-control">
 		  </select>
 		</td>
 	      </tr>
 	    </table>
-	    <div id="graph-div">
-	      <svg id="graph">
+	    <div id="graph-div" style="margin-left: auto; margin-right: auto;">
+	      <svg id="graph" style="margin-left: auto; margin-right: auto;">
 	      </svg>
 	    </div> <!-- graph-div -->
 	  </section> <!-- graph-section -->
 
-	  <div id="data-table-div" style="overflow:auto; max-height: 400px;">
-	    <table id="data-table" border="0">
+	  <div id="data-table-div" style="overflow:auto; max-height: 400px; margin-bottom: 300px;">
+	    <table id="data-table" class="table">
 	      <!-- <tr> -->
 	      <!-- 	<th>Datetime</th> -->
 	      <!-- 	<th>Temperature (C)</th> -->
