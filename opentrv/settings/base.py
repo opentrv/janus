@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'dataserver',
     'opentrv_sensor',
     'opentrv_sensor_brent',
+    'iotlaunchpad_tfl',
 )
 
 MIDDLEWARE_CLASSES = (

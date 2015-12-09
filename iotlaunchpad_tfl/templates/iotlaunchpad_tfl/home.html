@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en-GB"> <!-- First two characters are the language, if there are more than two then the rest describe the dialect -->
+  <head>
+    <title>OpenTRV TFL</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'base.css' %}" />
+
+    <!-- JQuery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <!-- AngularJS -->
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>-->
+
+    <!-- MathJax -->
+    <!--<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>-->
+
+    <!-- d3js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+    <!-- moments -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.js"></script>
+
+    <!-- google maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCjATOm1n8Ym2P02y8v0iFDC7ZfTAAPzWw"></script>
+    
+    <meta charset="utf-8" />
+    <meta name="description" content="OpenTRV TFL" />
+    <meta author="David Voong" />
+    
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0px">
+      <div class="container">
+	<div class="navbar-header" style="">
+	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	    <span class="sr-only">Toggle navigation</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </button>
+	  <a class="navbar-brand" href="#" style="">
+	    <img src="{% static 'opentrv/opentrv.100.png' %}" style="width: 100px; top: -10px; position: relative">
+	    <span style="position: relative; top: -10px; right: -10px">OpenTRV TFL</span>
+	  </a>
+	</div>
+	<!-- <div id="navbar" class="navbar-collapse collapse"> -->
+	<!--   <ul class="nav navbar-nav"> -->
+	<!--     <li class="active"><a href="#">Home</a></li> -->
+	<!--     <li><a href="#about">About</a></li> -->
+	<!--     <li><a href="#contact">Contact</a></li> -->
+	<!--     <li class="dropdown"> -->
+	<!--       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a> -->
+	<!--       <ul class="dropdown-menu"> -->
+	<!-- 	<li><a href="#">Action</a></li> -->
+	<!-- 	<li><a href="#">Another action</a></li> -->
+	<!-- 	<li><a href="#">Something else here</a></li> -->
+	<!-- 	<li role="separator" class="divider"></li> -->
+	<!-- 	<li class="dropdown-header">Nav header</li> -->
+	<!-- 	<li><a href="#">Separated link</a></li> -->
+	<!-- 	<li><a href="#">One more separated link</a></li> -->
+	<!--       </ul> -->
+	<!--     </li> -->
+	<!--   </ul> -->
+	  <ul class="nav navbar-nav navbar-right">
+            <li><a href="mailto:opentrv@opentrv.org.uk" target="_blank">Contact</a></li>
+	    <!-- <li><a href="../navbar/">Default</a></li> -->
+	    <!-- <li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li> -->
+	    <!-- <li><a href="../navbar-fixed-top/">Fixed top</a></li> -->
+	  </ul>
+	<!-- </div><\!--/.nav-collapse -\-> -->
+      </div>
+    </nav>
+    
+    <section id="map-section">
+      <!-- <h2>Map</h2> -->
+      <div id="map" style="height: 500px">
+      </div>
+    </section>
+
+    <div class="container">
+      <section id="introduction-section">
+      	<h2>Introduction</h2>
+      </section>
+      
+      
+      <!-- <section id="data-section"> -->
+      <!-- 	<h2>Data</h2> -->
+      <!-- 	  <div id="data-controls-div"> -->
+      <!-- 	    <button id="live-graph-button" type="button" class="btn btn-primary">Live Graphs</button> -->
+      <!-- 	    <section id="data-filter-section"> -->
+      <!-- 	      <h3>Filter</h3> -->
+      <!-- 	      <form> -->
+      <!-- 		<table class="table"> -->
+      <!-- 		  <tr> -->
+      <!-- 		    <th>First Datetime</th> -->
+      <!-- 		    <td><input id="datetime-first-input" name="datetime-first" value="2015-01-01 00:00:00"></td> -->
+      <!-- 		  </tr> -->
+      <!-- 		  <tr> -->
+      <!-- 		    <th>Last Datetime</th> -->
+      <!-- 		    <td><input id="datetime-last-input" name="datetime-last" value="2015-12-03 00:00:00"></td> -->
+      <!-- 		  </tr> -->
+      <!-- 		  <tr> -->
+      <!-- 		    <th>Sensor</th> -->
+      <!-- 		    <td><select id="sensor-id-input" name="sensor-id"></select></td> -->
+      <!-- 		  </tr> -->
+      <!-- 		  <tr> -->
+      <!-- 		    <th></th><td><input type="submit" class="btn btn-primary"></td> -->
+      <!-- 		  </tr> -->
+      <!-- 		</table> -->
+      <!-- 		<p id="filter-warnings" style="color:red"></p> -->
+      <!-- 	      </form> -->
+      <!-- 	    </section> <\!-- filter-section" -\-> -->
+      <!-- 	  </div> <\!-- data-controls-div" -\-> -->
+
+      <!-- 	  <section id="graph-section" style="text-align: center;"> -->
+      <!-- 	    <table class="table"> -->
+      <!-- 	      <tr> -->
+      <!-- 		<th>Quantity: </th> -->
+      <!-- 		<td> -->
+      <!-- 		  <select id="quantity-selector" class="form-control"> -->
+      <!-- 		  </select> -->
+      <!-- 		</td> -->
+      <!-- 	      </tr> -->
+      <!-- 	    </table> -->
+      <!-- 	    <div id="graph-div" style="margin-left: auto; margin-right: auto;"> -->
+      <!-- 	      <svg id="graph" style="margin-left: auto; margin-right: auto;"> -->
+      <!-- 	      </svg> -->
+      <!-- 	    </div> <\!-- graph-div -\-> -->
+      <!-- 	  </section> <\!-- graph-section -\-> -->
+
+      <!-- 	  <div id="data-table-div" style="overflow:auto; max-height: 400px; margin-bottom: 300px;"> -->
+      <!-- 	    <table id="data-table" class="table"> -->
+      <!-- 	      <\!-- <tr> -\-> -->
+      <!-- 	      <\!-- 	<th>Datetime</th> -\-> -->
+      <!-- 	      <\!-- 	<th>Temperature (C)</th> -\-> -->
+      <!-- 	      <\!-- 	<th>Humidity (%)</th> -\-> -->
+      <!-- 	      <\!-- 	<th>Light</th> -\-> -->
+      <!-- 	      <\!-- 	<th>Occupancy (H)</th> -\-> -->
+      <!-- 	      <\!-- 	<th>Battery</th> -\-> -->
+      <!-- 	      <\!-- </tr> -\-> -->
+      <!-- 	    </table> -->
+      <!-- 	  </div> <\!-- data-table-div -\-> -->
+	  
+      <!-- 	</section> <\!-- data-section -\-> -->
+
+
+      <!-- <script src="{% static 'base.js' %}"></script> -->
+      <script src="{% static 'iotlaunchpad_tfl/home.js' %}"></script>
+    </div> <!-- container -->
+    
+  </body>
+  
+</html>
