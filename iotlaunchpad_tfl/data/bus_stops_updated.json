@@ -1,0 +1,218 @@
+{
+    "digicat": {
+        "stops": [
+            {
+                "lat": 51.528168, 
+                "lon": -0.128281, 
+                "name": "British Library", 
+                "naptan": "490015700C"
+            }, 
+            {
+                "lat": 51.530668, 
+                "lon": -0.12319, 
+                "name": "King's Cross St. Pancras Underground Station", 
+                "naptan": "490000129E"
+            }
+        ]
+    }, 
+    "palestra": {
+        "stops": [
+            {
+                "lat": 51.50398, 
+                "lon": -0.104935, 
+                "name": "Southwark Underground Station", 
+                "naptan": "490013323SA"
+            }, 
+            {
+                "lat": 51.50398, 
+                "lon": -0.104935, 
+                "name": "Southwark Underground Station", 
+                "naptan": "490013323SB"
+            }, 
+            {
+                "lat": 51.504269, 
+                "lon": -0.113356, 
+                "name": "Waterloo", 
+                "naptan": "490000254QA"
+            }
+        ]
+    }, 
+    "shoreditch": {
+        "stops": [
+            {
+                "lat": 51.529639, 
+                "lon": -0.077413, 
+                "name": "Falkirk Street", 
+                "naptan": "490006726S"
+            }, 
+            {
+                "lat": 51.52338, 
+                "lon": -0.07524, 
+                "name": "Shoreditch High Street Rail Station", 
+                "naptan": "490012113N"
+            }, 
+            {
+                "lat": 51.525952, 
+                "lon": -0.078015, 
+                "name": "Shoreditch Church", 
+                "naptan": "490007625T"
+            }, 
+            {
+                "lat": 51.521895, 
+                "lon": -0.077883, 
+                "name": "Commercial Street / Worship Street", 
+                "naptan": "490005524D"
+            }, 
+            {
+                "lat": 51.51979, 
+                "lon": -0.078966, 
+                "name": "Primrose Street", 
+                "naptan": "490012391S"
+            }, 
+            {
+                "lat": 51.52487, 
+                "lon": -0.064149, 
+                "name": "Weavers Fields", 
+                "naptan": "490013996S"
+            }, 
+            {
+                "lat": 51.520601, 
+                "lon": -0.074666, 
+                "name": "Folgate Street", 
+                "naptan": "490010584S"
+            }, 
+            {
+                "lat": 51.51794, 
+                "lon": -0.083162, 
+                "name": "Liverpool Street", 
+                "naptan": "490000138K"
+            }, 
+            {
+                "lat": 51.51794, 
+                "lon": -0.083162, 
+                "name": "Liverpool Street", 
+                "naptan": "490000138L"
+            }, 
+            {
+                "lat": 51.516078, 
+                "lon": -0.079613, 
+                "name": "Houndsditch", 
+                "naptan": "490008386M"
+            }, 
+            {
+                "lat": 51.513395, 
+                "lon": -0.089095, 
+                "name": "Bank", 
+                "naptan": "490013195H"
+            }, 
+            {
+                "lat": 51.512899, 
+                "lon": -0.096984, 
+                "name": "St Paul's Churchyard", 
+                "naptan": "490010200C"
+            }, 
+            {
+                "lat": 51.512104, 
+                "lon": -0.116286, 
+                "name": "Aldwych / Somerset House", 
+                "naptan": "490003193S"
+            }, 
+            {
+                "lat": 51.504269, 
+                "lon": -0.113356, 
+                "name": "Waterloo", 
+                "naptan": "490014271N"
+            }, 
+            {
+                "lat": 51.505881, 
+                "lon": -0.086807, 
+                "name": "London Bridge", 
+                "naptan": "490000139M"
+            }, 
+            {
+                "lat": 51.51794, 
+                "lon": -0.083162, 
+                "name": "Liverpool Street", 
+                "naptan": "490000138E"
+            }, 
+            {
+                "lat": 51.504269, 
+                "lon": -0.113356, 
+                "name": "Waterloo", 
+                "naptan": "490000254QA"
+            }, 
+            {
+                "lat": 51.513338, 
+                "lon": -0.114145, 
+                "name": "The Royal Courts Of Justice", 
+                "naptan": "490011757L"
+            }, 
+            {
+                "lat": 51.513338, 
+                "lon": -0.114145, 
+                "name": "The Royal Courts Of Justice", 
+                "naptan": "490011757M"
+            }, 
+            {
+                "lat": 51.513395, 
+                "lon": -0.089095, 
+                "name": "Bank", 
+                "naptan": "490013195J"
+            }, 
+            {
+                "lat": 51.51979, 
+                "lon": -0.078966, 
+                "name": "Primrose Street", 
+                "naptan": "490011187N"
+            }, 
+            {
+                "lat": 51.52338, 
+                "lon": -0.07524, 
+                "name": "Shoreditch High Street Rail Station", 
+                "naptan": "490005524F"
+            }, 
+            {
+                "lat": 51.528461, 
+                "lon": -0.077967, 
+                "name": "Waterson Street", 
+                "naptan": "490007625V"
+            }, 
+            {
+                "lat": 51.530169, 
+                "lon": -0.077405, 
+                "name": "Hoxton Station  / Geffrye Museum", 
+                "naptan": "490006726N"
+            }, 
+            {
+                "lat": 51.531502, 
+                "lon": -0.064372, 
+                "name": "Warner Place", 
+                "naptan": "490011306E"
+            }, 
+            {
+                "lat": 51.531978, 
+                "lon": -0.057273, 
+                "name": "Cambridge Heath (London) Rail Station", 
+                "naptan": "490001044O"
+            }, 
+            {
+                "lat": 51.538496, 
+                "lon": -0.057211, 
+                "name": "King Edward's Road", 
+                "naptan": "490012442N"
+            }, 
+            {
+                "lat": 51.520575, 
+                "lon": -0.085752, 
+                "name": "Finsbury Square / Moorgate", 
+                "naptan": "490015209C"
+            }, 
+            {
+                "lat": 51.513395, 
+                "lon": -0.089095, 
+                "name": "Bank", 
+                "naptan": "490011218A"
+            }
+        ]
+    }
+}

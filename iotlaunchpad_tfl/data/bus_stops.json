@@ -2,11 +2,11 @@
     "palestra": {
 	"stops": [
 	    {
-		"naptan": "490013323SAN",
+		"naptan": "490013323SA",
 		"name": "Southwark Station"
 	    },
 	    {
-		"naptan": "490013323SBN",
+		"naptan": "490013323SB",
 		"name": "Southwark Station"
 	    },
 	    {
@@ -19,7 +19,7 @@
     "digicat": {
 	"stops":[
 	    {
-		"naptan": "490015700CN",
+		"naptan": "490015700C",
 		"name": "British Library"
 	    },
 	    {
