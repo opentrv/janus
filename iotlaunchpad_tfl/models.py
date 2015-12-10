@@ -6,3 +6,22 @@ class BusStop(models.Model):
     naptan_id = models.CharField(max_length=50)
     latitude = models.FloatField(null=True, default=None)
     longitude = models.FloatField(null=True, default=None)
+
+    def __str__(self):
+        return "{}: {}".format(self.naptan_id, self.name)
+
+class BusStopGroup(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class BusStopToBusStopGroup(models.Model):
+    bus_stop = models.ForeignKey(BusStop)
+    bus_stop_group = models.ForeignKey(BusStopGroup)
+
+    class Meta:
+        unique_together = (("bus_stop", "bus_stop_group"),)
+
+    def __str__(self):
+        return '{}: {}'.format(self.bus_stop_group, self.bus_stop)
