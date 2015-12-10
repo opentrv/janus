@@ -1,0 +1,157 @@
+{
+    "palestra": {
+	"stops": [
+	    {
+		"naptan": "490013323SAN",
+		"name": "Southwark Station"
+	    },
+	    {
+		"naptan": "490013323SBN",
+		"name": "Southwark Station"
+	    },
+	    {
+		"naptan": "490000254QA",
+		"name": "Waterloo"
+	    }
+	]
+    },
+
+    "digicat": {
+	"stops":[
+	    {
+		"naptan": "490015700CN",
+		"name": "British Library"
+	    },
+	    {
+		"naptan": "490000129E",
+		"name": "King's Cross Station"
+	    }
+	]
+    },
+
+    "shoreditch": {
+	"stops": [
+	    {
+		"naptan": "490006726S",
+		"name": "Falkirk St"
+	    },
+	    {
+		"naptan": "490012113N",
+		"name": "Shoreditch High Street Station (N)"
+	    },
+	    {
+		"naptan": "490007625T",
+		"name": "Shoreditch Church"
+	    },
+	    {
+		"naptan": "490005524D",
+		"name": "Commercial St / Worship St"
+	    },
+	    {
+		"naptan": "490012391S",
+		"name": "Primrose Street"
+	    },
+
+	    {
+		"naptan": "490013996S",
+		"name": "Weavers Fields"
+	    },
+	    {
+		"naptan": "490010584S",
+		"name": "Folgate St"
+	    },
+	    {
+		"naptan": "490000138K",
+		"name": "Liverpool Street Stn"
+	    },
+	    {
+		"naptan": "490000138L",
+		"name": "Liverpool Street Stn"
+	    },
+	    {
+		"naptan": "490008386M",
+		"name": "Houndsditch"
+	    },
+	    
+	    {
+		"naptan": "490013195H",
+		"name": "Bank Station / Queen Victoria St"
+	    },
+	    {
+		"naptan": "490010200C",
+		"name": "St Paul's Churchyard"
+	    },
+	    {
+		"naptan": "490003193S",
+		"name": "Aldwych / Somerset House"
+	    },
+	    {
+		"naptan": "490014271N",
+		"name": "Waterloo Bridge / Southbank"
+	    },
+	    {
+		"naptan": "490000139M",
+		"name": "London Bridge"
+	    },
+	    
+	    {
+		"naptan": "490000138E",
+		"name": "Liverpool Street Stn"
+	    },
+	    {
+		"naptan": "490000254QA",
+		"name": "Waterloo Station / Waterloo Road"
+	    },
+	    {
+		"naptan": "490011757L",
+		"name": "Royal Courts of Justice"
+	    },
+	    {
+		"naptan": "490011757M",
+		"name": "Royal Courts of Justice"
+	    },
+	    {
+		"naptan": "490013195J",
+		"name": "Bank Stn / Queen Vic St"
+	    },
+	    
+	    {
+		"naptan": "490011187N",
+		"name": "Primrose Street"
+	    },
+	    {
+		"naptan": "490005524F",
+		"name": "Shoreditch High Street Station (N)"
+	    },
+	    {
+		"naptan": "490007625V",
+		"name": "Waterson Street"
+	    },
+	    {
+		"naptan": "490006726N",
+		"name": "Hoxton Station / Geffrye Museum"
+	    },
+	    {
+		"naptan": "490011306E",
+		"name": "Warner Place"
+	    },
+
+	    {
+		"naptan": "490001044O",
+		"name": "Cambridge Heath Stn"
+	    },
+	    {
+		"naptan": "490012442N",
+		"name": "King Edward's Road"
+	    },
+	    {
+		"naptan": "490015209C",
+		"name": "Finsbury Square"
+	    },
+	    {
+		"naptan": "490011218A",
+		"name": "Bank station"
+	    }
+	]
+    }
+}
