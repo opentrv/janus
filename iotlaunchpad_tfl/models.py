@@ -10,6 +10,14 @@ class BusStop(models.Model):
     def __str__(self):
         return "{}: {}".format(self.naptan_id, self.name)
 
+    def json(self):
+        return {
+            'naptan_id': self.naptan_id,
+            'name': self.name,
+            'latitude': self.latitude,
+            'longitude': self.longitude
+        }
+
 class BusStopGroup(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -25,3 +33,4 @@ class BusStopToBusStopGroup(models.Model):
 
     def __str__(self):
         return '{}: {}'.format(self.bus_stop_group, self.bus_stop)
+

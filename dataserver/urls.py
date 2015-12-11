@@ -4,4 +4,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$', 'dataserver.views.home'),
     url(r'^api/opentrv/', include('opentrv_sensor.urls')),
+    url(r'^api/tfl/', include('iotlaunchpad_tfl.urls')),
 ]

@@ -11,7 +11,7 @@ class TestInitialiseDBAddArguments(django.test.TestCase):
         command = initialise_db.Command()
         command.add_arguments(parser)
 
-        parser.add_argument.assert_any_call('json_filepath', nargs='?', default='../data/bus_stops_updated.json')
+        parser.add_argument.assert_any_call('json_filepath', nargs='?', default='iotlaunchpad_tfl/data/bus_stops_updated.json')
 
 @mock.patch('iotlaunchpad_tfl.management.commands.initialise_db.ArgumentParser')
 @mock.patch('iotlaunchpad_tfl.management.commands.initialise_db.open')

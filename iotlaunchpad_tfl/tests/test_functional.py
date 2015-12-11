@@ -1,4 +1,6 @@
 import os
+import json
+import requests
 from selenium import webdriver
 from django.test import TestCase, LiveServerTestCase
 
@@ -16,7 +18,21 @@ class FunctionalTest(LiveServerTestCase):
         # user goes to opentrv tfl homepage
         self.browser.get(os.path.join(self.live_server_url, 'tfl'))
         self.assertEqual(self.browser.title, "OpenTRV TFL")
-        
+
+
+class FunctionalTestAPI(LiveServerTestCase):
+    
+    def test(self):
+
+        url = os.path.join(self.live_server_url, 'dataserver', 'api', 'tfl', 'data', 'bus-stops')
+        response = requests.get(url)
+        try:
+            response = response.json()
+        except Exception as e:
+            print response.content
+            raise e
+
+        self.fail('TODO')
 
 # import time
 # import datetime
