@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class BusStop(models.Model):
     name = models.CharField(max_length=100)
-    naptan_id = models.CharField(max_length=50)
+    naptan_id = models.CharField(max_length=50, unique=True)
     latitude = models.FloatField(null=True, default=None)
     longitude = models.FloatField(null=True, default=None)
 
@@ -11,7 +11,7 @@ class BusStop(models.Model):
         return "{}: {}".format(self.naptan_id, self.name)
 
 class BusStopGroup(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
