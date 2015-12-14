@@ -6,6 +6,8 @@ from django.test import TestCase, LiveServerTestCase
 
 class FunctionalTest(LiveServerTestCase):
 
+    fixtures = ['bus_stops']
+    
     def setUp(self):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(5)
@@ -19,6 +21,14 @@ class FunctionalTest(LiveServerTestCase):
         self.browser.get(os.path.join(self.live_server_url, 'tfl'))
         self.assertEqual(self.browser.title, "OpenTRV TFL")
 
+        # user sees a map
+        bus_map = self.browser.find_element_by_id('map')
+
+        # on the map are markers
+        bus_stops = bus_map.find_element_by_css_selector(".bus-stop")
+
+        # test map interaction
+        self.fail('TODO: test interaction with map markers.')
 
 class FunctionalTestAPI(LiveServerTestCase):
     
@@ -32,8 +42,9 @@ class FunctionalTestAPI(LiveServerTestCase):
             print response.content
             raise e
 
-        self.fail('TODO')
-
+        # test other API calls
+        self.fail('TODO: test other API calls')
+        
 # import time
 # import datetime
 # import os

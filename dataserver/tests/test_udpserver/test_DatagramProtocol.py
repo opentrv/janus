@@ -24,7 +24,7 @@ class TestDatagramReceived(TestDatagramProtocol):
         udpprotocol = DatagramProtocol()
         udpprotocol.datagramReceived(msg, ('127.0.0.1', port))
 
-        Measurement.create_from_udp.assert_called_once_with(msg)
+        Measurement.create_from_udp.assert_called_once_with(msg, mock_timezone.now.return_value)
     
     def test_successful_measurement_creation_log_message(self, mock_timezone, Measurement, logger):
         datetime = timezone.now()

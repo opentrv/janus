@@ -8,7 +8,7 @@ def get_current_datetime():
     return timezone.now()
 
 def convert_datetime(datetime_string):
-    pass
+    return date_parser(datetime_string)
 
 # Create your models here.
 class Measurement(models.Model):
@@ -48,7 +48,12 @@ class Measurement(models.Model):
 
     @staticmethod
     def create_from_log(msg):
-
+        ''' 
+        create measurement from log message. Log messages contain datetime objects
+        of when the message was received. e.g.
+        [ "2015-01-01T00:00:43Z", "", {"@":"0a45","+":2,"vac|h":9,"T|C16":201,"L":0} ]
+        The host id is currently unused.
+        '''
         datetime, host_id, measurements  = json.loads(msg)
         msg = msg[msg.index('{'):msg.index('}') + 1]
         datetime = convert_datetime(datetime)

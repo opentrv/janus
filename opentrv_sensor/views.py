@@ -29,7 +29,7 @@ def build_query(args):
     if 'datetime-first' in args:
         try:
             datetime_first = date_parser.parse(args['datetime-first'])
-            
+            datetime_first = timezone.make_aware(datetime_first)
             query.kwargs['datetime__gte'] = datetime_first
         except Exception as e:
             errors.append('{}: {}, datetime-first: {}'.format(type(e).__name__, e, args['datetime-first']))
@@ -37,6 +37,7 @@ def build_query(args):
     if 'datetime-last' in args:
         try:
             datetime_last = date_parser.parse(args['datetime-last'])
+            datetime_last = timezone.make_aware(datetime_last)
             query.kwargs['datetime__lte'] = datetime_last
         except Exception as e:
             errors.append('{}: {}, datetime-last: {}'.format(type(e).__name__, e, args['datetime-last']))

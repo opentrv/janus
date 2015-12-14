@@ -13,7 +13,7 @@ class TestMeasurement(TestCase):
 class TestConvertDatetime(TestCase):
 
     def test(self):
-        self.fail('TODO')
+        self.fail('TODO: test datetime converter')
 
 class TestToDict(TestMeasurement):
 

@@ -238,4 +238,4 @@ class BrentTest(LiveServerTestCase):
 
     def test(self):
 
-        self.fail('TODO: selenium tests')
+        self.fail('TODO: selenium tests, filtering data, displaying graph, etc.')

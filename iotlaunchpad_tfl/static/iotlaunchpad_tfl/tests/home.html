@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Test IOTLaunchpad TFL Page</title>
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.20.0.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCjATOm1n8Ym2P02y8v0iFDC7ZfTAAPzWw"></script>
+    <script src="http://code.jquery.com/qunit/qunit-1.20.0.js"></script>
+    <!-- <script> -->
+    <!--   var readyCalled = false; -->
+    <!--   $.ready = function(func){ -->
+    <!--   readyCalled = (myInit == func); -->
+    <!--   console.log("readyCalled:" + readyCalled); -->
+    <!--   } -->
+    <!-- </script> -->
+    <script src="../home.js"></script>
+    <script>
+      
+
+      <!-- QUnit.test("smoke test", function(){ -->
+      <!-- equal(1, 1, "Math works!"); -->
+      <!-- }); -->
+
+      QUnit.test("Should have called ready", function() {
+      var readyCalled = false;
+      $.ready = {
+      promise: function(func){
+      readyCalled = true;
+      },
+      done: function(func){
+      readyCalled = true;
+      }
+      }
+
+      myFunction();
+      <!-- var mapInitialised = false; -->
+      <!-- $.ready = function(func){ -->
+      <!-- console.log("ready2"); -->
+      <!-- mapInitialised = true; -->
+      <!-- } -->
+      <!-- myInit(); -->
+      ok(readyCalled, "ready should have been called with myInit as a parameter.");
+      });
+    </script>
+  </head>
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+      <div id="map">
+      </div>
+    </div>
+  </body>
+  </html>
+
+<!-- <!Doctype html> -->
+<!-- <html> -->
+<!--   <head> -->
+<!--     <meta charset="utf-8"> -->
+<!--     <title>Test Homepage</title> -->
+<!--     <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.20.0.css"> -->
+<!--     <script src="http://code.jquery.com/qunit/qunit-1.20.0.js"></script> -->
+<!--     <script src="home.js"></script> -->
+<!--   </head> -->
+
+<!--   <body> -->
+<!--     <div id="qunit"></div> -->
+<!--     <div id="qunit-fixture"></div> -->
+<!--   </body> -->
+    
