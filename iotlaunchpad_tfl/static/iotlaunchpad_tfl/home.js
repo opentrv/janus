@@ -1,4 +1,5 @@
 var map;
+var currentInfoWindow;
 
 function initMap() {
     // Create a map object and specify the DOM element for display.
@@ -11,32 +12,47 @@ function initMap() {
     // console.log(map);
 }
 
-// function myInit(){
-//     console.log("in myInit");
-//     $(document).ready(function(){
-// 	console.log("ready");
-//     });
-// }
+function addBusStop(busStop, map){
+    var marker = new google.maps.Marker({
+	position: {lat: busStop.latitude, lng: busStop.longitude},
+	map: map,
+	title: busStop.name,
+	class: "bus-stop"
+    });
 
+    info = "<p>" + busStop.name + "</p>"
+    info += "<p>lat: " + busStop.latitude + "<br>"
+    info += "lng: " + busStop.longitude + "<br>"
+    // info += "occupancy: " + busStop.occupancy + "</p>"
+    
+    var infowindow = new google.maps.InfoWindow({
+	content: info
+    });
+    
+    marker.addListener('click', function() {
+	if(currentInfoWindow !== undefined){
+	    currentInfoWindow.close();
+	}
+	infowindow.open(map, marker);
+	currentInfoWindow = infowindow;
+    });
 
-function myInit(){
-    console.log("myInit");
+    return marker;
 }
 
-function myFunction()
-{
-    $(document).ready(myInit);
-}
+$(document).ready(function(){
+    console.log("document ready!");
+    initMap();
 
-myFunction();
+    $.get("/dataserver/api/tfl/data/bus-stops", function(response){
+	if(response.status == 200){
+	    var busStops = response.content;
+	    for(var i in busStops){
+		var busStop = busStops[i];
+		var marker = addBusStop(busStop, map);
+	    }
+	}
+    });
 
-// $(document).ready(function(){
-//     console.log("document ready!");
-//     initMap();
 
-//     var marker = new google.maps.Marker({
-// 	position: {lat: 51.5159, lng: -0.1297},
-// 	map: map,
-// 	title: 'Hello World!'
-//     });
-// });
+});
