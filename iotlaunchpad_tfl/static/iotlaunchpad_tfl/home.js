@@ -8,35 +8,33 @@ function initMap() {
      	scrollwheel: false,
      	zoom: 12
     });
-    // console.log(map);
 }
 
-// function myInit(){
-//     console.log("in myInit");
-//     $(document).ready(function(){
-// 	console.log("ready");
-//     });
-// }
 
+$(document).ready(function(){
+    console.log("document ready!");
+    initMap();
 
-function myInit(){
-    console.log("myInit");
-}
+    var busStops;
+    var markers = [];
+    $.get('/dataserver/api/tfl/data/bus-stops', function(data, status){
+	busStops = data.content;
+	for(i in busStops){
+	    var marker = new google.maps.Marker({
+		position: {lat: busStops[i].latitude, lng: busStops[i].longitude},
+		map: map,
+		title: busStops[i].name,
+		class: 'bus-stop'
+	    });
 
-function myFunction()
-{
-    $(document).ready(myInit);
-}
+	    marker.addListener('click', function(){
+		console.log(this.title);
+		console.log(this.position.lat());
+		console.log(this.position.lng());
+	    });
+	}
 
-myFunction();
+    });
 
-// $(document).ready(function(){
-//     console.log("document ready!");
-//     initMap();
-
-//     var marker = new google.maps.Marker({
-// 	position: {lat: 51.5159, lng: -0.1297},
-// 	map: map,
-// 	title: 'Hello World!'
-//     });
-// });
+    
+});
