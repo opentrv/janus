@@ -3,6 +3,7 @@
 ## Applications
 
 * **dataserver**: UDP server functionality
+* **deployment**: Deployment scripts for deployment to a production server or local virtual machine
 * **functional_tests**: Project wide functional tests
 * **iotlaunchpad**: iotlaunchpad wide modules
 * **iotlaunchpad_indoors**: Frontend interface for the iotlaunchpad room monitoring project
