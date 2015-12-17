@@ -2,7 +2,7 @@
 
 ## Applications
 
-* **dataserver**: UDP server functionality
+* [**dataserver**](https://github.com/dvoong/opentrv/tree/master/dataserver): UDP server functionality
 * **deployment**: Deployment scripts for deployment to a production server or local virtual machine
 * **functional_tests**: Project wide functional tests
 * **iotlaunchpad**: iotlaunchpad wide modules
