@@ -88,7 +88,8 @@ class Measurement(models.Model):
                          'H': 'relative_humidity',
                          'tT': 'target_temperature',
                          'vC': 'valve_travel',
-                         'O': 'occupancy'
+                         'O': 'occupancy',
+                         'b': 'boiler',
                 }[type_]
 
                 if type_ == 'temperature' or type_ == 'target_temperature':
@@ -107,6 +108,9 @@ class Measurement(models.Model):
                         val = val * 0.001
                     else:
                         raise Exception('Unrecognised unit of battery')
+                if type_ == 'boiler':
+                    if val not in [0, 1]:
+                        raise Exception('Invalid value for boiler: {}, allowed values: [0, 1]'.format(val))
 
                 measurement = Measurement(datetime=get_current_datetime() if datetime == None else datetime, sensor_id=sensor_id, type=type_, value=val)                
                 measurement.save()

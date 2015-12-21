@@ -10,10 +10,10 @@ from django.utils import timezone
 class TestMeasurement(TestCase):
     pass
 
-class TestConvertDatetime(TestCase):
+# class TestConvertDatetime(TestCase):
 
-    def test(self):
-        self.fail('TODO: test datetime converter')
+#     def test(self):
+#         self.fail('TODO: test datetime converter')
 
 class TestToDict(TestMeasurement):
 
@@ -53,6 +53,19 @@ class TestInit(TestMeasurement):
 @mock.patch('opentrv_sensor.models.Measurement')
 class TestCreateFromUDP(TestMeasurement):
 
+    def test_boiler_measurement(self, MockMeasurement, get_current_datetime):
+        msg = '{"@":"0a45","+":2,"b":0}'
+
+        measurements = Measurement.create_from_udp(msg)
+
+        MockMeasurement.assert_called_once_with(datetime=get_current_datetime.return_value, sensor_id="0a45", type="boiler", value=0)
+
+    def test_invalid_boiler_measurement_raises_error(self, MockMeasurement, get_current_datetime):
+        msg = '{"@":"0a45","+":2,"b":2}'
+
+        with self.assertRaises(Exception) as e:
+            measurements = Measurement.create_from_udp(msg)
+            
     def test_supplied_datetime(self, MockMeasurement, get_current_datetime):
         msg = '{"@":"0a45","+":2,"vac|h":9}'
         mock_datetime = mock.Mock()
