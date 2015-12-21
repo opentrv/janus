@@ -1,5 +1,13 @@
 # README
 
+This application contains components for creating, modifying and reading data from the OpenTRV REV sensors.
+
+* [`models.py`](https://github.com/dvoong/opentrv/blob/master/opentrv_sensor/models.py): Defines the database structure for storing the data.
+* [`fixtures`](https://github.com/dvoong/opentrv/tree/master/opentrv_sensor/fixtures): Trial data for testing purposes
+* [`sample_data`](https://github.com/dvoong/opentrv/tree/master/opentrv_sensor/sample_data): Sample data provided from tests run by Damon in January 2015
+* [`urls.py`](https://github.com/dvoong/opentrv/blob/master/opentrv_sensor/urls.py): API URLs
+* [`views.py`](https://github.com/dvoong/opentrv/blob/master/opentrv_sensor/views.py): API backend methods
+
 ## API Methods
 
 ### `GET /dataserver/api/opentrv/data`
