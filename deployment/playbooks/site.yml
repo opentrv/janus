@@ -35,7 +35,7 @@
     # get the code here. Use git hub for a remote host or let the vm do the shared folder thing
     # if no source directory exists do a git clone else do a git pull
     - name: check out the repository on the host
-      git: repo=https://github.com/dvoong/opentrv dest=/srv/opentrv/source accept_hostkey=yes
+      git: repo=https://github.com/dvoong/opentrv dest=/srv/opentrv/source accept_hostkey=yes force=yes
       become: yes
       become_user: opentrv
       when: use_git
