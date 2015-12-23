@@ -122,7 +122,7 @@ def sensor_ids(request):
 
     for x in measurements.values('sensor_id').distinct():
         sensors.extend(x.values())
-    response['content'] = sensors
+    response['content'] = sorted(sensors)
     return JsonResponse(response)
     
 def dates(request):
