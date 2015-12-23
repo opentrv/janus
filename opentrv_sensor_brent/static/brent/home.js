@@ -272,11 +272,21 @@ $(document).ready(function(){
     $("#datetime-first-input").on("change", function(){
 	console.log("datetime-first-input changed");
 	console.log("new val: " + $(this).val());
+	updateSensors($(this).val(), $("#datetime-last-input").val());
+    });
+
+    $("#datetime-last-input").on("change", function(){
+	console.log("datetime-last-input changed");
+	console.log("new val: " + $(this).val());
+	updateSensors($("#datetime-first-input").val(), $(this).val());
+    });
+
+    function updateSensors(datetimeFirst, datetimeLast){
 	var selectedSensor = $("#sensor-id-input").val();
-	var datetimeLast = $("#datetime-last-input").val();
-	console.log("last: " + datetimeLast);
+	console.log("datetimeFirst: " + datetimeFirst);
+	console.log("datetimeLast: " + datetimeLast);
 	console.log("selectedSensor: " + selectedSensor);
-	$.get("/dataserver/api/opentrv/data/sensor-ids", {'datetime-first': $(this).val(), 'datetime-last': datetimeLast})
+	$.get("/dataserver/api/opentrv/data/sensor-ids", {'datetime-first': datetimeFirst, 'datetime-last': datetimeLast})
 	    .done(function(response){
 		var sensors = response.content;
 		console.log("sensors: " + response.content);
@@ -289,8 +299,8 @@ $(document).ready(function(){
 		    $("#sensor-id-input").append(optionTag);
 		}
 	    });
-    });
-
+    }
+    
     $("#datetime-first-input").change();
     
 });
