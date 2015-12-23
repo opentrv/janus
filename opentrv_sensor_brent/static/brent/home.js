@@ -22,11 +22,12 @@ function populateTable(measurements, measurement_types){
     console.log(measurements);
     var table = $("#data-table");
     table.empty();
-    headers_tag = "<tr><th>Datetime</th>"
+    headers_tag = "<thead><tr><th>Datetime</th>"
+    // headers_tag = "<tr style=\"position: absolute;\"><th>Datetime</th>"
     for(var i in measurement_types){
 	headers_tag += "<th>" + measurement_types[i] + "</th>";
     }
-    headers_tag += "</tr>"
+    headers_tag += "</tr></thead>"
     table.append(headers_tag);
     // group measurements by datetime
     measurement_dates = {}
@@ -258,15 +259,39 @@ $(document).ready(function(){
 	return setInterval(getData, interval);
     }
 
-    $.get("/dataserver/api/opentrv/data/sensor-ids", function(response){
-	var sensors = response.content;
-	for(var i in sensors){
-	    var option_tag = "<option value=\"" + sensors[i] + "\">" + sensors[i] + "</option>"
-	    $("#sensor-id-input").append(option_tag);
-	}
-	$("#data-filter-section form").submit()
-	// $("#property-selection-section button").first().click();
+    // $.get("/dataserver/api/opentrv/data/sensor-ids", function(response){
+    // 	var sensors = response.content;
+    // 	for(var i in sensors){
+    // 	    var option_tag = "<option value=\"" + sensors[i] + "\">" + sensors[i] + "</option>"
+    // 	    $("#sensor-id-input").append(option_tag);
+    // 	}
+    // 	$("#data-filter-section form").submit()
+    // 	// $("#property-selection-section button").first().click();
+    // });
+
+    $("#datetime-first-input").on("change", function(){
+	console.log("datetime-first-input changed");
+	console.log("new val: " + $(this).val());
+	var selectedSensor = $("#sensor-id-input").val();
+	var datetimeLast = $("#datetime-last-input").val();
+	console.log("last: " + datetimeLast);
+	console.log("selectedSensor: " + selectedSensor);
+	$.get("/dataserver/api/opentrv/data/sensor-ids", {'datetime-first': $(this).val(), 'datetime-last': datetimeLast})
+	    .done(function(response){
+		var sensors = response.content;
+		console.log("sensors: " + response.content);
+		$("#sensor-id-input").empty();
+		for(var i in sensors){
+		    var optionTag = $("<option value=\"" + sensors[i] + "\">" + sensors[i] + "</option>");
+		    if(sensors[i] == selectedSensor || i == 0){
+			optionTag.prop("selected", true);
+		    }
+		    $("#sensor-id-input").append(optionTag);
+		}
+	    });
     });
+
+    $("#datetime-first-input").change();
     
 });
 
