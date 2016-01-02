@@ -7,6 +7,8 @@ import requests
 import copy
 from django.test import TestCase, LiveServerTestCase
 from selenium import webdriver
+from django.utils import timezone
+from dateutil.parser import parse as date_parser
 
 tests_dir = '.temp/tests'
 if not os.path.exists(tests_dir):
@@ -17,28 +19,28 @@ class FunctionalTest(LiveServerTestCase):
     error_log_filename = 'udp_server_errors.log'
     maxDiff = None
 
-    def check_data_response(self, params, expected):
-        response = requests.get(self.DATA_API_URL, params=params)
-        try:
-            response = response.json()
+    def check_data_response(self, params, expected, timedelta=None):
+        '''
+        Check an API call with a given set of parameters returns expected content
+        '''
+        response = requests.get(self.DATA_API_URL, params=params).json()
+        if timedelta == None:
+            self.assertEqual(response, expected)
+        else:
             self.assertEqual(response['status'], expected['status'])
             self.assertEqual(response['errors'], expected['errors'])
-            if response['content'] == None:
-                self.assertEqual(expected['content'], response['content'])
-            else:
-                for measurement in response['content']:
-                    x = {
-                        'type': measurement['type'],
-                        'value': measurement['value'],
-                        'sensor_id': measurement['sensor_id'],
-                    }
-                    self.assertIn(x, expected['content'])
-                self.assertEqual(len(response['content']), len(expected['content']))
-            # self.assertEqual(response.json(), expected)
-        except ValueError as e:
-            raise Exception('{}\n{}'.format(e, response.text))
+            self.assertEqual(len(response['content']), len(expected['content']))
+            for i, measurement in enumerate(response['content']):
+                response_datetime = date_parser(response['content'][i]['datetime'])
+                expected_datetime = date_parser(expected['content'][i]['datetime'])
+                self.assertTrue(response_datetime >= expected_datetime)
+                self.assertTrue(response_datetime < expected_datetime + timedelta)
+                self.assertEqual(response['content'][i].keys(), expected['content'][i].keys())
+                for key, val in response['content'][i].iteritems():
+                    if key != 'datetime':
+                        self.assertEqual(response['content'][i][key], expected['content'][i][key])
+        return response
 
-    # TODO: Tests will fail when not in GMT timezone +00:00. Fix me.
     def test(self):
 
         # start the udp server
@@ -70,6 +72,7 @@ class FunctionalTest(LiveServerTestCase):
         self.assertIn(msg, line)
 
         # send some opentrv data to the udp server
+        now = timezone.now()
         msg = '{"@":"0a45","+":2,"vac|h":9,"T|C16":201,"L":0}'
         subprocess.check_call(['python', 'manage.py', 'send_udp', msg])
 
@@ -82,57 +85,37 @@ class FunctionalTest(LiveServerTestCase):
                     'sensor_id': "0a45",
                     'type': 'vacancy',
                     'value': 9.0,
+                    'datetime': now.isoformat()
                 },
                 {
                     'sensor_id': "0a45",
                     'type': 'temperature',
                     'value': 12.5625,
+                    'datetime': now.isoformat()
                 },
                 {
                     'sensor_id': "0a45",
                     'type': 'light',
                     'value': 0.0,
+                    'datetime': now.isoformat()
                 }
             ]
         }
-                
-        # expected = {'status': 200, 'content':
-        #             [
-        #                 {
-        #                     'datetime': "2015-01-01T00:00:43+00:00",
-        #                     'sensor_id': "0a45",
-        #                     'type': 'vacancy',
-        #                     'value': 9.0,
-        #                 },
-        #                 {
-        #                     'datetime': "2015-01-01T00:00:43+00:00",
-        #                     'sensor_id': "0a45",
-        #                     'type': 'temperature',
-        #                     'value': 12.5625,
-        #                 },
-        #                 {
-        #                     'datetime': "2015-01-01T00:00:43+00:00",
-        #                     'sensor_id': "0a45",
-        #                     'type': 'light',
-        #                     'value': 0.0,
-        #                 }
-        #             ],
-        #             'errors': []
-        # }
+
         initial_measurements = copy.deepcopy(expected['content']) # save this for later tests
 
-        self.check_data_response({}, expected)
-        self.check_data_response({'date': datetime.date.today().isoformat()}, expected)
+        response1 = self.check_data_response({}, expected, timedelta=datetime.timedelta(seconds=1))
+        self.check_data_response({'date': datetime.date.today().isoformat()}, expected, timedelta=datetime.timedelta(seconds=1))
 
         # filter on datetime-first and datetime-last
         params={'datetime-first': '2015-01-01T00:00:40', 'datetime-last': datetime.date.today() + datetime.timedelta(days=1)}# '2015-01-01T00:00:50'}
         expected = expected # user previous expected
-        self.check_data_response(params, expected)
+        self.check_data_response(params, expected, timedelta=datetime.timedelta(seconds=1))
 
         # filter on datetime-first and datetime-last where there is no data
         params={'datetime-first': '2015-01-01T00:00:50', 'datetime-last': '2015-01-01T00:00:55'}
         expected = {'status': 200, 'content': [], 'errors': []}
-        self.check_data_response(params, expected)
+        self.check_data_response(params, expected, timedelta=datetime.timedelta(seconds=1))
 
         # graceful handling of invalid datetimes
         params={'datetime-first': 'yo', 'datetime-last': 'xo'}
@@ -144,32 +127,31 @@ class FunctionalTest(LiveServerTestCase):
         params={'type': ['temperature', 'light']}
         expected={'status': 200, 'content':[
             {
-                'datetime': "2015-01-01T00:00:43+00:00",
+                'datetime': now.isoformat(),
                 'sensor_id': "0a45",
                 'type': 'temperature',
                 'value': 12.5625,
             },
             {
-                'datetime': "2015-01-01T00:00:43+00:00",
+                'datetime': now.isoformat(),
                 'sensor_id': "0a45",
                 'type': 'light',
                 'value': 0.0,
             }
         ], 'errors': []}
-        self.check_data_response(params, expected)
+        self.check_data_response(params, expected, timedelta=datetime.timedelta(seconds=1))
 
         # measurements that do not exist return nothing
         params={'type': ['does not exist']}
         expected={'status': 200, 'content': [], 'errors': []}
         self.check_data_response(params, expected)
 
-        # Add more data
         msgs = [
-            '[ "2015-01-01T00:01:13Z", "", {"@":"819c","T|C16":71,"L":5,"B|cV":256} ]',
-            '[ "2015-01-01T00:01:19Z", "", {"@":"414a","+":4,"vac|h":3,"v|%":0,"tT|C":7,"vC|%":50} ]',
-            '[ "2015-01-01T00:02:17Z", "", {"@":"0d49","+":2,"vac|h":22,"T|C16":203,"L":0} ]',
-            '[ "2015-01-01T00:02:31Z", "", {"@":"2d1a","+":1,"tT|C":7,"vC|%":102,"T|C16":292} ]',
-            '[ "2015-01-01T00:03:17Z", "", {"@":"0d49","+":3,"B|mV":2601,"v|%":0,"tT|C":7,"O":1} ]',
+            '{"@":"819c","T|C16":71,"L":5,"B|cV":256}',
+            '{"@":"414a","+":4,"vac|h":3,"v|%":0,"tT|C":7,"vC|%":50}',
+            '{"@":"0d49","+":2,"vac|h":22,"T|C16":203,"L":0}',
+            '{"@":"2d1a","+":1,"tT|C":7,"vC|%":102,"T|C16":292}',
+            '{"@":"0d49","+":3,"B|mV":2601,"v|%":0,"tT|C":7,"O":1}',
         ]
         for msg in msgs:
             subprocess.check_call(['python', 'manage.py', 'send_udp', msg])            
@@ -177,7 +159,7 @@ class FunctionalTest(LiveServerTestCase):
         # filter on sensor_id(s)
         params={'sensor-id': ['0a45', '0a46']}
         expected = {'status': 200, 'content': initial_measurements, 'errors': []}
-        self.check_data_response(params, expected)
+        self.check_data_response(params, expected, timedelta=datetime.timedelta(seconds=1))
 
         # get a list of measurement types
         response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/types')
@@ -205,8 +187,10 @@ class FunctionalTest(LiveServerTestCase):
             self.assertIn(sensor_id, response.json()['content'])
         
         # get first and last datetimes
+        first_measurement = response1['content'][0]
+        last_measurement = requests.get(self.DATA_API_URL, params={'sensor-id': '0d49', 'type': 'occupancy'}).json()['content'][0]
         response = requests.get(self.live_server_url + '/dataserver/api/opentrv/data/dates')
-        self.assertEqual(response.json()['content'], ['2015-01-01T00:00:43+00:00', '2015-01-01T00:03:17+00:00'])
+        self.assertEqual(response.json()['content'], [first_measurement['datetime'], last_measurement['datetime']])
         
         self.fail('TODO')
 
