@@ -6,6 +6,7 @@ import subprocess
 import requests
 import copy
 from django.test import TestCase, LiveServerTestCase
+from selenium import webdriver
 
 tests_dir = '.temp/tests'
 if not os.path.exists(tests_dir):
@@ -231,6 +232,7 @@ class FunctionalTest(LiveServerTestCase):
 
         # kill the server process
         self.udp_server_process.kill()
+        # subprocess.call(['python', 'manage.py', 'flush', '--noinput', '--settings', 'opentrv.settings.test'])
 
 class BrentTest(LiveServerTestCase):
 
@@ -239,3 +241,4 @@ class BrentTest(LiveServerTestCase):
     def test(self):
 
         self.fail('TODO: selenium tests, filtering data, displaying graph, etc.')
+
