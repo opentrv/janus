@@ -3,4 +3,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^$', 'opentrv_sensor_brent.views.home'),
+    url(r'sign-in', 'opentrv_sensor_brent.views.sign_in')
 ]

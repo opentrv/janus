@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html ng-app="sign-in">
+  <head>
+    {% load staticfiles %}
+    <script src="{% static "angular.js" %}"></script>
+    <script src="{% static "jquery-2.1.4.js" %}"></script>
+    <script src="{% static "bootstrap-3.3.6-dist/js/bootstrap.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap-3.3.6-dist/css/bootstrap.css" %}" />
+  </head>
+  <body ng-controller="MainCtrl as ctrl">
+    <div class="container">
+
+      <form id="sign-in-form" class="form-inline" ng-submit="ctrl.submit()"> {% csrf_token %}
+	<fieldset class="form-group">
+	  <label for="email-input">Email</label>
+	  <input id="email-input" class="form-control" type="email" ng-model="ctrl.email" required />
+	</fieldset>
+	<fieldset class="form-group">
+	  <label for="password-input">Password</label>
+	  <input id="password-input" class="form-control" type="password" ng-model="ctrl.password" required />
+	</fieldset>
+	<button type="submit" class="btn btn-primary">Submit</button>
+	<span id="form-errors" ng-show="ctrl.signInFailed">Unrecognised email and password</span>
+      </form>
+      
+    </div>
+    
+    <script type="text/javascript">
+      angular.module("sign-in", [])
+      .controller('MainCtrl', ["$http", "$q", function($http, $q){
+      var self = this;
+      self.email = "";
+      self.password = "";
+      self.signInFailed = false;
+      var config = {
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken'
+      }
+      self.submit = function(){
+      console.log("Submit form");
+      console.log("email: " + self.email);
+      console.log("password: " + self.password);
+      $http.post("/brent/sign-in", {email: self.email, password: self.password}, config)
+      .then(function(response){
+      console.log("sign in ok");
+      console.log(response);
+      },
+      function(response){
+      console.log("sign-in failed");
+      $q.reject();
+      });
+
+      };
+      }
+      ]
+      );
+    </script>
+  </body>
+</html>
+
+      <!-- self.submit = function() { -->
+      <!-- console.log("Submit form"); -->
+      <!-- console.log("email: " + self.email); -->
+      <!-- console.log("password: " + self.password); -->
+      <!-- $http.post("/brent/sign-in", {email: self.email, password: self.password}) -->
+      <!-- .then(function(response){ -->
+      <!-- console.log("sign in ok"); -->
+      <!-- }, -->
+      <!-- function(response){ -->
+      <!-- console.log("sign-in failed"); -->
+      <!-- }); -->
+      <!-- }}] -->

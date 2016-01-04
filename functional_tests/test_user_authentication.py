@@ -1,3 +1,5 @@
+import os, time
+from selenium import webdriver
 from django.test import TestCase, LiveServerTestCase
 
 class ApiTest(LiveServerTestCase):
@@ -6,29 +8,46 @@ class ApiTest(LiveServerTestCase):
     fixtures = []
 
     def setUp(self):
-        pass
+        self.browser = webdriver.Firefox()
 
     def tearDown(self):
-        pass
+        self.browser.quit()
+
+    def wait_for_redirect(self, url, timeout=2):
+        elapsed = 0
+        while elapsed < timeout:
+            current_url = self.browser.current_url.rstrip('/')
+            if current_url  == url:
+                return True
+            time.sleep(0.5)
+            elapsed += 0.5
+        raise Exception('Redirect failed: current_url: {}, target_url: {}'.format(current_url, url))
 
     def test(self):
 
-        # attempt to get all measurements /dataserver/api/opentrv/data
-        # return error: requires user to be logged in
-        # user goes to login page /brent/sign-in
+        # goto the brent homepage
+        homepage_url = os.path.join(self.live_server_url, 'brent')
+        self.browser.get(homepage_url)
+        # user is redirected to sign in page /brent/sign-in
+        self.wait_for_redirect(os.path.join(self.live_server_url, 'brent/sign-in'))
         # user fills in sign in form
+        sign_in_form = self.browser.find_element_by_id('sign-in-form')
+        email_input = sign_in_form.find_element_by_id('email-input')
+        pass_input = sign_in_form.find_element_by_id('password-input')
+        email_input.send_keys('voong.david@gmail.com')
+        pass_input.send_keys('secret')
         # user submits form
+        pass_input.send_keys('\n')
         # error msg: user does not exist
         # user fills in sign up form
         # user is returned a message saying they need to wait to be verified by
         # an administrator of the website, email address for more info included
         # user signs in
         # user is redirected to the verification required page /brent/user-verfication
-        # user goes directly to the /brent page
+        # user manually goes directly to the /brent page
         # user is redirected to the verification required page /brent/user-verfication
         # an administrator verifies the user
-        # user signs in
-        # user is redirected to the main brent page /brent
+        # user manually goes directly to the /brent page
         # data is displayed on the page
         
         self.fail('TODO')
