@@ -11,7 +11,7 @@
   <body ng-controller="MainCtrl as ctrl">
     <div class="container">
 
-      <form id="sign-in-form" class="form-inline" ng-submit="ctrl.submit()"> {% csrf_token %}
+      <form id="sign-in-form" class="form-inline" ng-submit="ctrl.submit()">
 	<fieldset class="form-group">
 	  <label for="email-input">Email</label>
 	  <input id="email-input" class="form-control" type="email" ng-model="ctrl.email" required />
