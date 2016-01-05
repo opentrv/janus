@@ -34,13 +34,26 @@ class ApiTest(LiveServerTestCase):
         sign_in_form = self.browser.find_element_by_id('sign-in-form')
         email_input = sign_in_form.find_element_by_id('email-input')
         pass_input = sign_in_form.find_element_by_id('password-input')
+        form_errors = sign_in_form.find_element_by_id('form-errors')
         email_input.send_keys('voong.david@gmail.com')
         pass_input.send_keys('secret')
         # user submits form
         pass_input.send_keys('\n')
         # error msg: user does not exist
+        sign_in_form = self.browser.find_element_by_id('sign-in-form')
+        form_errors = sign_in_form.find_element_by_id('form-errors')
+        self.assertEqual(form_errors.text, "Unrecognised Email and Password")
         # user fills in sign up form
+        sign_up_form = self.browser.find_element_by_id('sign-up-form')
+        email_input = sign_up_form.find_element_by_id('email-input')
+        password_input = sign_up_form.find_element_by_id('password-input')
+        password_input_confirmation = sign_up_form.find_element_by_id('password-input-confirmation')
+        email_input.send_keys('voong.david@gmail.com')
+        password_input.send_keys('secret')
+        password_input_confirmation.send_keys('secret')
+        sign_up_form.submit()
         # user is returned a message saying they need to wait to be verified by
+        self.assertEqual(self.browser.current_url.rstrip('/'), os.path.join(self.live_server_url, 'brent/user-permissions'))
         # an administrator of the website, email address for more info included
         # user signs in
         # user is redirected to the verification required page /brent/user-verfication
