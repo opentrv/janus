@@ -59,16 +59,39 @@ class ApiTest(LiveServerTestCase):
         sign_up_form.submit()
 
         # user is returned a message saying they need to wait to be verified by
+        # an administrator of the website, email address for more info included
         self.assertEqual(self.browser.current_url.rstrip('/'), os.path.join(self.live_server_url, 'brent/user-permissions'))
 
-        # an administrator of the website, email address for more info included
         # user signs in
+        self.browser.get(self.live_server_url + '/brent/sign-in')
+        sign_in_form = self.browser.find_element_by_id('sign-in-form')
+        email_input = sign_in_form.find_element_by_id('email-input')
+        password_input = sign_in_form.find_element_by_id('password-input')
+        email_input.send_keys('voong.david@gmail.com')
+        password_input.send_keys('secret\n')
+        
         # user is redirected to the verification required page /brent/user-verfication
+        self.assertEqual(self.browser.current_url.rstrip('/'), os.path.join(self.live_server_url, 'brent/user-permissions'))
+        
         # user manually goes directly to the /brent page
+        self.browser.get(self.live_server_url + '/brent')
+
         # user is redirected to the verification required page /brent/user-verfication
+        self.assertEqual(self.browser.current_url.rstrip('/'), os.path.join(self.live_server_url, 'brent/user-permissions'))
+
         # an administrator verifies the user
+        from django.contrib.auth.models import User, Permission
+        dvoong = User.objects.get(username="voong.david@gmail.com")
+        permission = Permission.objects.get(codename="view_measurement")
+        dvoong.user_permissions.add(permission)
+        dvoong.save()
+        dvoong = User.objects.get(username="voong.david@gmail.com")
+
         # user manually goes directly to the /brent page
+        self.browser.get(self.live_server_url + '/brent')
+        
         # data is displayed on the page
+        self.assertEqual(self.browser.current_url.rstrip('/'), os.path.join(self.live_server_url, 'brent'))
         
         self.fail('TODO')
     

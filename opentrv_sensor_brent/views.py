@@ -1,5 +1,5 @@
 import datetime
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -7,7 +7,11 @@ from django.http import HttpResponse
 # Create your views here.
 
 def home(request):
-    return redirect('/brent/sign-in')
+    if not request.user.is_authenticated():
+        return redirect('/brent/sign-in')
+
+    if not request.user.has_perm('opentrv_sensor.view_measurement'):
+        return redirect('/brent/user-permissions')
     
     today = datetime.date.today()
     today = datetime.datetime(today.year, today.month, today.day)
@@ -25,6 +29,7 @@ def sign_in(request):
         user = authenticate(username=email, password=password)
 
         if user:
+            login(request, user)
             if user.has_perm('opentrv_sensor.view_measurement'):
                 return redirect('/brent')
             else:
@@ -32,8 +37,14 @@ def sign_in(request):
         else:
             context['email'] = email
             context['errors'] = ['Unrecognised Email and Password']
-        
-    return render(request, 'brent/sign-in.html', context=context)
+            return render(request, 'brent/sign-in.html', context=context)
+
+    if request.user.is_authenticated():
+        if request.user.has_perm('opentrv_sensor.view_measurement'):
+            return redirect('/brent')
+        else:
+            return redirect('/brent/user-permissions')
+    return render(request, 'brent/sign-in.html')
 
 def user_permissions(request):
     return HttpResponse('This user does not have permission to view this content, please contact an administrator')
