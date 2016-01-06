@@ -22,7 +22,7 @@
 
       <section id="sign-up-section">
 	<h2>Sign Up</h2>
-	<form id="sign-up-form" action="/brent/sign-up" method="POST"> {% csrf_token %}
+	<form id="sign-up-form" action="/brent/sign-in" method="POST"> {% csrf_token %}
 	  <fieldset class="form-group">
 	    <label for="email-input">Email</label>
 	    <input id="email-input" class="form-control" type="email" name="email" required />

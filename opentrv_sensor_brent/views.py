@@ -37,3 +37,20 @@ def sign_in(request):
 
 def user_permissions(request):
     return HttpResponse('This user does not have permission to view this content, please contact an administrator')
+
+def sign_up(request):
+    email = request.POST['email']
+    password = request.POST['password']
+    password_confirmation = request.POST['password-confirmation']
+    try:
+        assert password == password_confirmation, 'Password confirmation does not match'
+        User.objects.create_user(username=email, password=password)
+    except Exception as e:
+        context = {'email': email, 'errors': [str(e)]}
+        return render(request, 'brent/sign-in.html', context)
+    return redirect('/brent/user-permissions')
+
+def sign_in_or_sign_up(request):
+    if 'password-confirmation' in request.POST:
+        return sign_up(request)
+    return sign_in(request)
