@@ -25,7 +25,7 @@
 	<form id="sign-up-form" action="/brent/sign-in" method="POST"> {% csrf_token %}
 	  <fieldset class="form-group">
 	    <label for="email-input">Email</label>
-	    <input id="email-input" class="form-control" type="email" name="email" required />
+	    <input id="email-input" class="form-control" type="email" name="email" value="{{ sign_up_email }}" required />
 	  </fieldset>
 	  <fieldset class="form-group">
 	    <label for="password-input">Password</label>
@@ -35,6 +35,13 @@
 	    <label for="password-input-confirmation">Password Confirmation</label>
 	    <input id="password-input-confirmation" class="form-control" type="password" name="password-confirmation" required />
 	  </fieldset>
+	  <span id="form-errors">
+	    <ul>
+	      {% for error in sign_up_errors %}
+	      <li>{{ error }}</li>
+	      {% endfor %}
+	    </ul>
+	  </span>
 	  <button type="submit" class="btn btn-primary">Submit</button>
 	</form>
       </section>

@@ -1,7 +1,7 @@
 import mock
 from django.contrib.auth.models import User
 from django.test import TestCase
-from opentrv_sensor_brent.views import sign_in_or_sign_up, sign_up, sign_in, home
+from opentrv_sensor_brent.views import sign_in_or_sign_up, sign_up, sign_in, home, logout_view
 
 @mock.patch('opentrv_sensor_brent.views.render')
 @mock.patch('opentrv_sensor_brent.views.redirect')
@@ -202,6 +202,7 @@ class SignUpTest(TestCase):
             'password': 'secret',
             'password-confirmation': 'secret'
         }
+        User.objects.filter.return_value = []
 
         response = sign_up(request)
 
@@ -220,7 +221,7 @@ class SignUpTest(TestCase):
 
         response = sign_up(request)
 
-        render.assert_called_once_with(request, 'brent/sign-in.html', {'email': 'voong.david@gmail.com', 'errors': ['sign_up failure']})
+        render.assert_called_once_with(request, 'brent/sign-in.html', {'sign_up_email': 'voong.david@gmail.com', 'sign_up_errors': ['sign_up failure']})
         response = render.return_value
         
     @mock.patch('opentrv_sensor_brent.views.render')
@@ -235,6 +236,39 @@ class SignUpTest(TestCase):
 
         response = sign_up(request)
         
-        render.assert_called_once_with(request, 'brent/sign-in.html', {'email': 'voong.david@gmail.com', 'errors': ['Password confirmation does not match']})
+        render.assert_called_once_with(request, 'brent/sign-in.html', {'sign_up_email': 'voong.david@gmail.com', 'sign_up_errors': ['Password confirmation does not match']})
         response = render.return_value
 
+    @mock.patch('opentrv_sensor_brent.views.render')
+    def test_if_user_exists_already_raise_error(self, render, User):
+        User.objects.filter.return_value = [mock.Mock()]
+        request = mock.Mock()
+        request.POST = {
+            'email': 'voong.david@gmail.com',
+            'password': 'secret',
+            'password-confirmation': 'secret'
+        }
+
+        response = sign_up(request)
+
+        render.assert_called_once_with(request, 'brent/sign-in.html', {'sign_up_email': 'voong.david@gmail.com', 'sign_up_errors': ['This email address is already registered']})
+
+@mock.patch('opentrv_sensor_brent.views.redirect')        
+@mock.patch('opentrv_sensor_brent.views.logout')        
+class LogoutTest(TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test(self, mock_logout, redirect):
+
+        request = mock.Mock()
+
+        response = logout_view(request)
+
+        mock_logout.assert_called_once_with(request)
+        redirect.assert_called_once_with('/brent/sign-in')
+        self.assertEqual(response, redirect.return_value)

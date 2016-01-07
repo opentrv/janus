@@ -1,5 +1,5 @@
 import datetime
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -55,9 +55,10 @@ def sign_up(request):
     password_confirmation = request.POST['password-confirmation']
     try:
         assert password == password_confirmation, 'Password confirmation does not match'
+        assert len(User.objects.filter(username=email)) == 0, 'This email address is already registered'
         User.objects.create_user(username=email, password=password)
     except Exception as e:
-        context = {'email': email, 'errors': [str(e)]}
+        context = {'sign_up_email': email, 'sign_up_errors': [str(e)]}
         return render(request, 'brent/sign-in.html', context)
     return redirect('/brent/user-permissions')
 
@@ -65,3 +66,7 @@ def sign_in_or_sign_up(request):
     if 'password-confirmation' in request.POST:
         return sign_up(request)
     return sign_in(request)
+
+def logout_view(request):
+    logout(request)
+    return redirect('/brent/sign-in')
