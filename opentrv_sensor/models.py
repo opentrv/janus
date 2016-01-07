@@ -30,6 +30,9 @@ class Measurement(models.Model):
 
     class Meta:
         unique_together = (("datetime", "type", "sensor_id"),)
+        permissions = (
+            ('view_measurement', 'Can see measurements'),
+        )
 
     @classmethod
     def to_dict(cls, measurement):

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html ng-app="sign-in">
+
+  <head>
+    <title>OpenTRV Brent Trial</title>
+    {% load staticfiles %}
+    <!-- <script src="{% static "angular.js" %}"></script> -->
+    <script src="{% static "jquery-2.1.4.js" %}"></script>
+    <script src="{% static "bootstrap-3.3.6-dist/js/bootstrap.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap-3.3.6-dist/css/bootstrap.css" %}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <link rel="stylesheet" href="{% static 'base.css' %}" />
+    <meta charset="utf-8" />
+    <meta name="description" content="OpenTRV Brent trial." />
+    <meta author="David Voong" />
+  </head>
+  
+  <body>
+
+    <div class="container">
+
+      <section id="sign-up-section">
+	<h2>Sign Up</h2>
+	<form id="sign-up-form" action="/brent/sign-in" method="POST"> {% csrf_token %}
+	  <fieldset class="form-group">
+	    <label for="email-input">Email</label>
+	    <input id="email-input" class="form-control" type="email" name="email" value="{{ sign_up_email }}" required />
+	  </fieldset>
+	  <fieldset class="form-group">
+	    <label for="password-input">Password</label>
+	    <input id="password-input" class="form-control" type="password" name="password" required />
+	  </fieldset>
+	  <fieldset class="form-group">
+	    <label for="password-input-confirmation">Password Confirmation</label>
+	    <input id="password-input-confirmation" class="form-control" type="password" name="password-confirmation" required />
+	  </fieldset>
+	  <span id="form-errors">
+	    <ul>
+	      {% for error in sign_up_errors %}
+	      <li>{{ error }}</li>
+	      {% endfor %}
+	    </ul>
+	  </span>
+	  <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+      </section>
+
+      <section id="sign-in-section">
+	<h2>Sign In</h2>
+	<form id="sign-in-form" action="/brent/sign-in" method="POST"> {% csrf_token %}
+	  <fieldset class="form-group">
+	    <label for="email-input">Email</label>
+	    <input id="email-input" class="form-control" type="email" name="email" value="{{ email }}" required />
+	  </fieldset>
+	  <fieldset class="form-group">
+	    <label for="password-input">Password</label>
+	    <input id="password-input" class="form-control" type="password" name="password" required />
+	  </fieldset>
+	  <span id="form-errors">
+	    <ul>
+	      {% for error in errors %}
+	      <li>{{ error }}</li>
+	      {% endfor %}
+	    </ul>
+	  </span>
+	  <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+      </section>
+      
+    </div>
+    
+  </body>
+</html>

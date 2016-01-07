@@ -9,8 +9,8 @@ class FunctionalTest(LiveServerTestCase):
     fixtures = ['bus_stops']
     
     def setUp(self):
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(5)
+        self.browser = webdriver.Firefox()
+        # self.browser.implicitly_wait(5)
 
     def tearDown(self):
         self.browser.quit()
@@ -25,7 +25,23 @@ class FunctionalTest(LiveServerTestCase):
         bus_map = self.browser.find_element_by_id('map')
 
         # on the map are markers
-        bus_stops = bus_map.find_element_by_css_selector(".bus-stop")
+        ''' 
+        Google maps markers do not create marker elements, probably for optimisation reasons.
+        This behaviour can be changed by including the option,
+
+        optimized : false
+
+        when instantiation a Google maps marker in the javascript, e.g.
+
+        var marker = new google.maps.Marker({
+          position: {lat: busStop.latitude, lng: busStop.longitude},
+          map: map,
+          title: busStop.name,
+          class: "bus-stop",
+          optimized: false
+        });
+        '''
+        # bus_stops = bus_map.find_element_by_css_selector(".bus-stop")
 
         # test map interaction
         self.fail('TODO: test interaction with map markers.')
