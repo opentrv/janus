@@ -28,10 +28,13 @@ def sign_in(request):
         password = request.POST['password']
         user = authenticate(username=email, password=password)
 
-        if user:
-            login(request, user)
-            if user.has_perm('opentrv_sensor.view_measurement'):
-                return redirect('/brent')
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                if user.has_perm('opentrv_sensor.view_measurement'):
+                    return redirect('/brent')
+        else:
+		    return redirect('/brent/user-permissions')
             else:
                 return redirect('/brent/user-permissions')
         else:
@@ -47,8 +50,9 @@ def sign_in(request):
     return render(request, 'brent/sign-in.html')
 
 def user_permissions(request):
-    return HttpResponse('This user does not have permission to view this content, please contact an administrator')
-
+#    logout(request)
+#    return HttpResponse('This user does not have permission or deactivated to view this content, please contact an administrator')
+    return render(request, 'brent/user-perm.html')
 def sign_up(request):
     email = request.POST['email']
     password = request.POST['password']
