@@ -33,8 +33,8 @@ def sign_in(request):
                 login(request, user)
                 if user.has_perm('opentrv_sensor.view_measurement'):
                     return redirect('/brent')
-        else:
-		    return redirect('/brent/user-permissions')
+                else:
+                    return redirect('/brent/user-permissions')
             else:
                 return redirect('/brent/user-permissions')
         else:
