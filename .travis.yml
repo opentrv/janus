@@ -17,9 +17,13 @@ python:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+
+services:
+  - postgresql
+  
 install:
   - sudo apt-get install nginx
-  - sudo apt-get install postgresql
+#  - sudo apt-get install postgresql
   - sudo apt-get install python-dev
   - sudo apt-get install python-psycopg2
   - sudo apt-get install libpq-dev
@@ -45,8 +49,6 @@ before_script:
   - sudo service gunicorn restart
   - sudo service udp_server restart
 
-services:
-  - postgresql
  
 # command to run tests
 script: ./run-tests.sh
