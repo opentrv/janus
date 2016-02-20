@@ -1,14 +1,18 @@
 #!/bin/sh
+# only for local build. remove for travis checkin
+# TRAVIS_BUILD_DIR='/home/ravindra/janus_copy'
 echo $TRAVIS_BUILD_DIR
 cd $TRAVIS_BUILD_DIR
-sudo adduser opentrv --system --disabled-password --uid 510
-sudo addgroup --gid 510 opentrv
-sudo adduser --uid 510 opentrv --ingroup opentrv sudo
+sudo addgroup opentrv --gid 510 
+sudo adduser opentrv --uid 510 --system --no-create-home --disabled-password
+sudo adduser opentrv --gid 510
+
 # sudo mkdir /srv/opentrv
 sudo chown -R opentrv:opentrv $TRAVIS_BUILD_DIR
 sudo mkdir $TRAVIS_BUILD_DIR/database/
 sudo mkdir $TRAVIS_BUILD_DIR/logs/
-sudo -u postgres psql -c 'create user opentrv --createdb --superuser' 
+sudo -u postgres psql -c "create user opentrv --createdb --superuser --password 'secret'"
+# sudo -u postgres psql -c "ALTER USER opentrv WITH PASSWORD 'secret';"
 sudo -u postgres psql -c 'create database opentrv_db owner opentrv'
 # sudo cp $TRAVIS_BUILD_DIR/templates/gunicorn.conf.j2 /etc/init/opentrv_gunicorn.conf
 # sudo cp $TRAVIS_BUILD_DIR/templates/nginx.conf.j2 /etc/nginx/sites-available/opentrv
