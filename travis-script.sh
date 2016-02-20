@@ -1,6 +1,6 @@
 #!/bin/sh
 # only for local build. remove for travis checkin
-TRAVIS_BUILD_DIR='/home/ravindra/janus-git/janus'
+# TRAVIS_BUILD_DIR='/home/ravindra/janus-git/janus'
 echo $TRAVIS_BUILD_DIR
 cd $TRAVIS_BUILD_DIR
 sudo addgroup opentrv --gid 510 
