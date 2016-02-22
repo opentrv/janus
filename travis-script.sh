@@ -10,7 +10,7 @@ sudo usermod -aG sudo opentrv
 
 # sudo mkdir /srv/opentrv
 sudo chown -R opentrv:opentrv $TRAVIS_BUILD_DIR
-sudo chmod -R 775 $TRAVIS_BUILD_DIR
+sudo chmod -R 777 $TRAVIS_BUILD_DIR
 sudo mkdir $TRAVIS_BUILD_DIR/database/
 sudo mkdir $TRAVIS_BUILD_DIR/logs/
 sudo -u postgres psql -c "create user opentrv --createdb --superuser --password 'secret'"
