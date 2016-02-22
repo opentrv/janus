@@ -6,6 +6,7 @@ from twisted.internet.protocol import DatagramProtocol as TwistedDatagramProtoco
 from twisted.internet import reactor
 import datetime
 import time
+import os
 import binascii
 import encryptpackets
 from encryptpackets import AESCipher
@@ -51,7 +52,9 @@ class UDPLogger(object):
 
     def log_udp_packets_file(self, host, data):
 
-        logfile = str('/srv/opentrv/source/udplog_'+ time.strftime("%d-%m-%Y"))+'.log'
+        SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+        BASE_DIR = os.path.abspath(os.path.dirname(SCRIPT_DIR))
+        logfile = str(BASE_DIR + '/udplog_'+ time.strftime("%d-%m-%Y")+'.log')
         with open(logfile,'a+') as f:
             f.write(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")+ ',' + host + ','+ data + '\n')
             print('written to file')
@@ -61,7 +64,7 @@ class UDPLogger(object):
         return encoded_data
     def decode_data(self,enc_data):
         decoded_data = base64.b64decode(enc_data)
-        return decoded_data        
+        return decoded_data
     def dataencrypt(self,data):
         aesencrpyt_data = aescrypt.dataencrypt(data)
         return aesencrpyt_data
@@ -81,8 +84,8 @@ class UDPLogger(object):
         return fdata
     def unformatwithspace(self,fdata):
         hexdata = fdata.replace(' ','')
-        return hexdata  
+        return hexdata
 
 udp_logger = UDPLogger()
 aescrypt = AESCipher(key)
-                        
+
