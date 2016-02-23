@@ -11,16 +11,45 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SensorLocation',
+            name='Address',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('Sensor_id', models.CharField(max_length=50)),
+                ('address', models.CharField(max_length=300, blank=True)),
+                ('post_code', models.CharField(max_length=20, blank=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated', models.DateTimeField(auto_now=True, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Location',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('parent_location', models.CharField(max_length=50, blank=True)),
+                ('location', models.CharField(max_length=32, blank=True)),
+                ('location_decription', models.CharField(max_length=50, blank=True)),
+                ('latlong', models.CharField(max_length=50, blank=True)),
                 ('address', models.CharField(max_length=300, blank=True)),
                 ('floor', models.IntegerField(blank=True)),
                 ('room', models.IntegerField(blank=True)),
                 ('wall', models.CharField(max_length=20, blank=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated', models.DateTimeField(auto_now=True, null=True)),
+                ('address_ref', models.ForeignKey(to='datamodel.Address')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SensorLocation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('sensor_id', models.CharField(max_length=50)),
+                ('address', models.CharField(max_length=300, blank=True)),
+                ('floor', models.IntegerField(blank=True)),
+                ('room', models.IntegerField(blank=True)),
+                ('wall', models.CharField(max_length=20, blank=True)),
+                ('aes_key', models.CharField(max_length=256, blank=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated', models.DateTimeField(auto_now=True, null=True)),
+                ('sensor_location', models.ForeignKey(to='datamodel.Location')),
             ],
         ),
         migrations.CreateModel(
@@ -33,5 +62,10 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated', models.DateTimeField(auto_now=True, null=True)),
             ],
+        ),
+        migrations.AddField(
+            model_name='sensorlocation',
+            name='sensor_ref',
+            field=models.ForeignKey(to='datamodel.SensorMetaData'),
         ),
     ]
