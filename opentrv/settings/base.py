@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'opentrv_sensor',
     'opentrv_sensor_brent',
     'iotlaunchpad_tfl',
+    'datamodel'
 )
 
 MIDDLEWARE_CLASSES = (
