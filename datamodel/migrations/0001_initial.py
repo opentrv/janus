@@ -42,14 +42,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('sensor_id', models.CharField(max_length=50)),
-                ('address', models.CharField(max_length=300, blank=True)),
-                ('floor', models.IntegerField(blank=True)),
-                ('room', models.IntegerField(blank=True)),
-                ('wall', models.CharField(max_length=20, blank=True)),
                 ('aes_key', models.CharField(max_length=256, blank=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated', models.DateTimeField(auto_now=True, null=True)),
-                ('sensor_location', models.ForeignKey(to='datamodel.Location')),
+                ('timestamp_start', models.DateTimeField(auto_now_add=True, null=True)),
+                ('timestamp_finish', models.DateTimeField(blank=True)),
+                ('timestamp_updated', models.DateTimeField(auto_now=True, null=True)),
+                ('sensor_location', models.ForeignKey(blank=True, to='datamodel.Location', null=True)),
             ],
         ),
         migrations.CreateModel(
