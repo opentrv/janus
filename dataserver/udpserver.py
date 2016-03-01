@@ -34,13 +34,10 @@ class DatagramProtocol(TwistedDatagramProtocol):
                 preshared = getPresharedData(data)
             
                 # decrypt the incoming packet  
-                plainText=extractMessageFromEncryptedPacket (data, preshared)
-                print (plainText)
+                udpdata=extractMessageFromEncryptedPacket (data, preshared)
             
             else:
                 print('unencrypted data received')
-                
-                #ToDo - This wont work.... the header and CRC trailer need stripping off. Since there is no plan 
                 udpdata = data
                 
              
@@ -49,18 +46,13 @@ class DatagramProtocol(TwistedDatagramProtocol):
             fdata = udp_logger.formatwithspace(hexdata)
             udp_logger.log_udp_packets_file(host,fdata)
             print('log updated')
-            
-            
-            #This will be replaced by a new measurement object!!
-            #measurements = opentrv_sensor.models.Measurement.create_from_udp(udpdata, timezone.now())
+            measurements = opentrv_sensor.models.Measurement.create_from_udp(udpdata, timezone.now())
             logger.info('Received: {}, from {}. Added to database.'.format(udpdata, host))
             
             
-            # executing the 3 lines below doesnt make sense until the new measurement object has been written
-            #if len(measurements['failure']):
-            #    logger.info('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
-            #    logger.error('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
-            
+            if len(measurements['failure']):
+                logger.info('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
+                logger.error('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
         except Exception as e:
             logger.error('Received: {}, from {}. Failed to create Measurement with exception: {}: {}'.format(data, host, e.__class__.__name__, e))
         
