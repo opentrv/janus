@@ -1,5 +1,6 @@
 import json
 import opentrv_sensor.models
+import opentrv_sensor.aesgcm
 import logging
 from django.utils import timezone
 from twisted.internet.protocol import DatagramProtocol as TwistedDatagramProtocol
@@ -24,15 +25,31 @@ class DatagramProtocol(TwistedDatagramProtocol):
 
     def datagramReceived(self, data, (host, port)):
         try:
-            udpdata = data
-            print('data received')
+            
+            if data[len(data)-1] == 0x80: # 0x80 in the last byte indicates aes-gcm encryption
+            
+                print('aes-gcm encrypted data received')
+                
+                # get the pre-shared keys and ID from the database
+                preshared = getPresharedData(data)
+            
+                # decrypt the incoming packet  
+                udpdata=extractMessageFromEncryptedPacket (data, preshared)
+            
+            else:
+                print('unencrypted data received')
+                udpdata = data
+                
+             
             hexdata = udp_logger.bintohex(udpdata)
-#            udp_logger.log_udp_packets_file(host,hexdata)
+#                udp_logger.log_udp_packets_file(host,hexdata)
             fdata = udp_logger.formatwithspace(hexdata)
             udp_logger.log_udp_packets_file(host,fdata)
             print('log updated')
-            measurements = opentrv_sensor.models.Measurement.create_from_udp(data, timezone.now())
-            logger.info('Received: {}, from {}. Added to database.'.format(data, host))
+            measurements = opentrv_sensor.models.Measurement.create_from_udp(udpdata, timezone.now())
+            logger.info('Received: {}, from {}. Added to database.'.format(udpdata, host))
+            
+            
             if len(measurements['failure']):
                 logger.info('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
                 logger.error('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
