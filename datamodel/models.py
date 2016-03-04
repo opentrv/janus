@@ -1,28 +1,36 @@
 from django.db import models
 
 
-class SensorMetaData(models.Model):
+class Sensor(models.Model):
 	node_id = models.CharField(max_length = 50)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
+	
+	def __unicode__(self):
+		return self.node_id
+
+class SensorMetadata(models.Model):
+	sensor_ref = models.ForeignKey('Sensor', blank = False, null = False)
 	type = models.CharField(max_length=50, blank = True)
 	value = models.CharField(max_length=50, blank = True)
 	unit = models.CharField(max_length=50, blank = True)
-	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
 	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
 	
-
-
 	def __unicode__(self):
-		return self.node_id
+		return self.type
 
 
 class SensorLocation(models.Model):
 	#sensor_id = models.CharField(max_length = 50) 
 	sensor_ref = models.ForeignKey('SensorMetaData', blank = True, null = True)
-	sensor_location = models.ForeignKey('Location', blank = True, null=True)
+	location_ref = models.ForeignKey('Location', blank = True, null=True)
 	aes_key = models.CharField(max_length = 256, blank = True)
-	timestamp_start = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
-	timestamp_finish = models.DateTimeField(blank=True, null = True)	
-	timestamp_updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	last_measurement = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
+	finish = models.DateTimeField(blank=True, null = True)	
+
+
 #	duration = models.CharField(max_length = 50, blank = True)
 
 #	@classmethod
@@ -40,13 +48,13 @@ class SensorLocation(models.Model):
 #		}
 
 	def __unicode__(self):
-		return self.sensor_ref + "/" + self.sensor_location
+		return self.aes_key
 
 
 class Location(models.Model):
-	parentId = models.ForeignKey('self', blank = True, null=True,related_name="children")
+	parent_ref = models.ForeignKey('self', blank = True, null=True,related_name="children")
 	#location = models.CharField(max_length = 32, blank = True)
-	location_description = models.CharField(max_length = 50, blank = True)
+	description = models.CharField(max_length = 50, blank = True)
 	#latlong = models.CharField(max_length = 50, blank = True)
 	address_ref = models.ForeignKey('Address', blank = True, null = True)
 	#address = models.CharField(max_length=300, blank = True)
@@ -54,17 +62,18 @@ class Location(models.Model):
 	#room = models.IntegerField(blank = True)
 	#wall = models.CharField(max_length = 20, blank = True)
 	#timestamp = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
 	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
 
 
 	def __unicode__(self):
-		return self.location_description
+		return self.description
 
 
 class Address(models.Model):
 	address = models.CharField(max_length=300, blank = True)
 	post_code = models.CharField(max_length=20, blank = True)
-	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
 	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
 
 
@@ -74,23 +83,18 @@ class Address(models.Model):
 		return self.address
 
 
-class Measurement2(models.Model):
+class Measurement(models.Model):
 	sensor_location_reference = models.ForeignKey('SensorLocation', blank = True, null = True)
-	timestamp = models.DateTimeField(auto_now_add=False, auto_now=False)
-	type = models.CharField(max_length=50, blank = True, null = True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+	measurement_type = models.CharField(max_length=50, blank = True, null = True)
 	value = models.CharField(max_length=50, blank = True, null = True)
 	value_integer = models.IntegerField(blank = True, null= True)
 	value_float = models.FloatField(blank = True, null= True)
 	unit = models.CharField(max_length=50, blank = True, null =True)
+	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
 	
-	
-	
-	
-
 	def __unicode__(self):
-
-
-		return self.sensor_location_reference + "/" + self.timestamp
+		return self.measurement_type
 
 
 

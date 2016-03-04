@@ -1,5 +1,5 @@
 import datamodel.models
-from datamodel.models import SensorMetaData
+from datamodel.models import SensorMetadata
 from datamodel.models import SensorLocation
 from datamodel.models import Location
 from datamodel.models import Address

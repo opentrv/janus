@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from datamodel.models import SensorMetaData
+from datamodel.models import Sensor
+from datamodel.models import SensorMetadata
 from datamodel.models import SensorLocation
 from datamodel.models import Location
 from datamodel.models import Address
-
-from datamodel.models import Measurement2
+from datamodel.models import Sensor
+from datamodel.models import Measurement
 from datamodel.datamodelquery import SensorLocationQuery
 
 class SensorLocationListFilter(admin.SimpleListFilter):
@@ -40,42 +41,51 @@ class SensorLocationListFilter(admin.SimpleListFilter):
             return SensorLocationQuery().get_key_assigned_sensors()
 
 #display in nice form in admin
-class SensorMetaDataAdmin(admin.ModelAdmin):
-	list_display = ["node_id", "type", "value", "unit","timestamp", "updated"]
+
+class SensorAdmin(admin.ModelAdmin):
+	list_display = ["__unicode__", "created", "updated"]
+
+	class Meta:
+		model = Sensor
+
+class SensorMetadataAdmin(admin.ModelAdmin):
+	list_display = ["sensor_ref", "type", "value", "unit","created", "updated"]
 
 	class Meta1:
-		model = SensorMetaData
+		model = SensorMetadata
 
 class SensorLocationAdmin(admin.ModelAdmin):
-	list_display = ["sensor_ref", "sensor_location", "aes_key", "timestamp_start", "timestamp_finish"]
+	list_display = ["sensor_ref", "location_ref", "aes_key", "created", "last_measurement","finish"]
 	list_filter = (SensorLocationListFilter,)
 	
 	class Meta2:
 		model = SensorLocation
 		
 class LocationAdmin(admin.ModelAdmin):
-	list_display = ["location_description", "address_ref", "updated"]
+	list_display = ["parent_ref","description", "address_ref", "created","updated"]
 
 	class Meta:
 		model = Location
 		
 class AddressAdmin(admin.ModelAdmin):
-	list_display = [ "address", "post_code", "timestamp", "updated"]
+	list_display = [ "address", "post_code", "created", "updated"]
 
 	class Meta:
 		model = Address
 
-class Measurement2Admin(admin.ModelAdmin):
-	list_display = ["timestamp", "type","value","value_integer","value_float", "unit"]
+class MeasurementAdmin(admin.ModelAdmin):
+	list_display = ["sensor_location_reference","measurement_type","value","value_integer","value_float", "unit", "created","updated" ]
 
 	class Meta:
-		model = Measurement2
+		model = Measurement
 
-admin.site.register(SensorMetaData, SensorMetaDataAdmin)
+
+admin.site.register(Sensor, SensorAdmin)
+admin.site.register(SensorMetadata, SensorMetadataAdmin)
 admin.site.register(SensorLocation, SensorLocationAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Address, AddressAdmin)
-admin.site.register(Measurement2, Measurement2Admin)
+admin.site.register(Measurement, MeasurementAdmin)
 
 # list filter support:
 
