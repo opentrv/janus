@@ -7,3 +7,5 @@
 .temp
 
 *.vagrant*
+
+link-to-*-private-key
