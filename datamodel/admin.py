@@ -43,19 +43,19 @@ class SensorLocationListFilter(admin.SimpleListFilter):
 #display in nice form in admin
 
 class SensorAdmin(admin.ModelAdmin):
-	list_display = ["__unicode__", "created", "updated"]
+	list_display = ["node_id", "created", "updated"]
 
 	class Meta:
 		model = Sensor
 
 class SensorMetadataAdmin(admin.ModelAdmin):
-	list_display = ["sensor_ref", "type", "value", "unit","created", "updated"]
+	list_display = ["sensor_ref", "sensor_type", "value", "unit","created", "updated"]
 
 	class Meta1:
 		model = SensorMetadata
 
 class SensorLocationAdmin(admin.ModelAdmin):
-	list_display = ["sensor_ref", "location_ref", "aes_key", "created", "last_measurement","finish"]
+	list_display = ["sensor_ref", "location_ref", "aes_key", "created", "updated", "last_measurement", "finish"]
 	list_filter = (SensorLocationListFilter,)
 	
 	class Meta2:
@@ -64,19 +64,19 @@ class SensorLocationAdmin(admin.ModelAdmin):
 class LocationAdmin(admin.ModelAdmin):
 	list_display = ["parent_ref","description", "address_ref", "created","updated"]
 
-	class Meta:
+	class Meta3:
 		model = Location
 		
 class AddressAdmin(admin.ModelAdmin):
-	list_display = [ "address", "post_code", "created", "updated"]
+	list_display = [ "address", "postcode", "created", "updated"]
 
-	class Meta:
+	class Metai4:
 		model = Address
 
 class MeasurementAdmin(admin.ModelAdmin):
-	list_display = ["sensor_location_reference","measurement_type","value","value_integer","value_float", "unit", "created","updated" ]
+	list_display = ["sensor_location_ref","measurement_type","value","value_integer","value_float", "unit", "created","updated" ]
 
-	class Meta:
+	class Metai5:
 		model = Measurement
 
 
