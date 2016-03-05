@@ -7,3 +7,7 @@ Be sure to commit your changes to the git repository first; deployment involves 
 `ansible-playbook playbooks/site.yml -i inventories/virtual_machine.ini`
 
 This requires you have a virtual machine set up as described in the `virtual_machine.ini` inventory file. The better way to do this would be to have an inventory file generated for your instance of a virtual machine and have this file stored outside of the code repository. Alternatively you could instead use environment variables in the inventory file so that they are dynamic files.
+
+## Deploying to pogon server
+
+`ansible-playbook playbooks/site.yml -i inventories/pogon-blue.ini --vault-password-file=<file on your system>`

@@ -9,3 +9,6 @@
 *.vagrant*
 
 link-to-*-private-key
+deployment/group_vars/all/vault
+deployment/playbooks/site.retry
+

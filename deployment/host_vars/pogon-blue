@@ -1,0 +1,3 @@
+---
+ansible_sudo_password: "{{ cloud_deploy_password }}"
+
