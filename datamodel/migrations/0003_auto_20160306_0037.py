@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('datamodel', '0003_auto_20160304_1901'),
+        ('datamodel', '0002_auto_20160306_0015'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sensormetadata',
-            name='sensor_ref',
-            field=models.ForeignKey(default=b'undefined', to='datamodel.Sensor'),
+            model_name='address',
+            name='postcode',
+            field=models.CharField(max_length=20, null=True, blank=True),
         ),
     ]
