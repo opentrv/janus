@@ -65,7 +65,7 @@ class TestGetCurrentSensorLocationFromSensor(TestMeasurement):
 
         returned_sensor = SensorQuery().get_sensor_from_partial_node_id(partial_node_id)
         self.assertEqual('TEST1', returned_sensor.node_id)
-        sensor_location = SensorLocationQuery().get_current_sensor_location(sensor)
+        sensor_location = SensorLocationQuery().get_current_sensor_location(returned_sensor)
         self.assertEqual("yes I'm the one", sensor_location.aes_key)
 
 class TestInit(TestMeasurement):
