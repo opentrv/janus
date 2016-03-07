@@ -1,5 +1,6 @@
 import datamodel.models
 from datamodel.models import SensorMetadata
+from datamodel.models import Sensor
 from datamodel.models import SensorLocation
 from datamodel.models import Location
 from datamodel.models import Address
@@ -47,6 +48,16 @@ class SensorLocationQuery():
 		sensor_location = SensorLocation.objects.filter(*query.args, **query.kwargs)
 		sensor_location_dict = SensorLocation.to_dict(sensor_location)
 		return sensor_location_dict
+
+        def get_aes_key_for_sensor(self, sensor):
+                sensor_location = SensorLocation.objects.filter(sensor_ref = sensor.id).filter(finished == null)
+                return sensor_location
+
+class SensorQuery():
+    def get_sensor_from_partial_node_id(self, starts_with):
+    	print ("object", self)
+        sensor = Sensor.objects.filter(created__istartswith(starts_with))
+        return sensor
 
 
 class Query(object):
