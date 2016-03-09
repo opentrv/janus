@@ -5,6 +5,5 @@
 
 # temp file e.g. from testing
 .temp
-
 *.vagrant*
 *.log
