@@ -31,9 +31,10 @@ def sendPackets(data):
         time.sleep(SLEEP_TIME)
     
     
-def sendStaticPacket():
+def sendStaticPacket(packet):
     while 1:
-        sendPackets(encryptedPacket)
+        sendPackets(packet)
+        
         
 def sendPacketFromLogFile(fileName):
     
@@ -65,7 +66,7 @@ if __name__ == "__main__":
                                   0x71,0xc0,0x48,0x10,0xc7,0xfc,0x80])
     
 
-    #sendStaticPacket()
+    #sendStaticPacket(encryptedPacket)
     sendPacketFromLogFile("udplog_01-03-2016.log")
     
     
