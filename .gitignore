@@ -5,7 +5,6 @@
 
 # temp file e.g. from testing
 .temp
-
 *.vagrant*
 
 link-to-*-private-key
