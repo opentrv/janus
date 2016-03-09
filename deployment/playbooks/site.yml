@@ -5,7 +5,13 @@
   vars:
     db_password: "secret"
     opentrv_repo_url: https://github.com/opentrv/janus
+
   tasks:
+    - name: load vault
+      include_vars: "vars/vault-default.yml"
+      when: is_production
+#      no_log: true
+
     - name: install apt packages
       apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
       sudo: True
