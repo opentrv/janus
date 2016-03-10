@@ -87,10 +87,13 @@ class OpenTRVAesgcmPacket(object):
         OTASensorIDLen = (self.encryptedPacket[OpenTRVAesgcmPacket.ID_LEN] & 0x0F)   # mask out the top bits of the byte as they contain a sequence number
         OTAsensorID = self.encryptedPacket[OpenTRVAesgcmPacket.ID:OTSsensorIDLen]    # copy the variable length address bytes out of the raw OTA packet.
         
-        #database queries     
+        #database queries   
+        
+        #find the right sensor  
         returned_sensor=SensorQuery().get_sensor_from_partial_node_id(OTAsensorID)
         fullSensorID  = returned_sensor.node_id
         
+        #extract the aes key from the location table
         sensor_location = SensorLocationQuery().get_current_sensor_location(returned_sensor)    
         key = sensor_location.aes_key
         
@@ -203,6 +206,65 @@ def extractMessageFromEncryptedPacket (encryptedPacket,test):
     
     return (plainText)
     
+ 
+ 
+"""
+QUICK INTEGRITY CHECKS
+
+From: https://raw.githubusercontent.com/DamonHD/OpenTRV/master/standards/protocol/IoTCommsFrameFormat/SecureBasicFrame-V0.1-201601.txt
+
+Before attempting to authenticate a secure frame (with expensive crypto),
+or even computing/testing the CRC in some environments,
+the following basic structural integrity checks can be be performed quickly
+at any receiver on any secureable frame to drop severely mangled frames.
+
+  * fl >= 4 (type, seqNum/il, bl, trailer bytes)
+  * fl may be further constrained by system limits, eg to <= 63 for 'small' frame
+  * type (the first frame byte) is never 0x00, 0x80, 0x7f, 0xff.
+  * il <= 8 for initial / small frame implementations (internal node ID is 8 bytes)
+  * il <= fl - 4 (ID length; minimum of 4 bytes of other overhead)
+  * bl <= fl - 4 - il (body length; minimum of 4 bytes of other overhead)
+  * the final frame byte (the final trailer byte) is never 0x00 nor 0xff
+  * tl == 1 for non-secure, tl >= 1 for secure (tl = fl - 3 - il - bl)
+
+Note that all of these should be verified in a way that avoids overflow
+or other miscalculation in the face of bad data, eg in the order above,
+eg for the trailer length first verify that the trailer offset/start < fl,
+and that for non-secure frames that tl == fl - 1.
+
+(Note that radios may themselves reject potentially-mangled frames in
+noisy environments because of carrier drop-out, preamble mismatches, etc.)
+
+    Minimal frame (excluding logical leading length fl byte) is:
+    +------+--------+----+----------------+
+    | type | seqidl | bl | 1-byte-trailer |
+    +------+--------+----+----------------+
+
+All small systems by default may reject frames with fl >= 64 bytes
+(fl == 63 is the limit in size of a 'small' frame, excluding fl itself,
+to allow for typical radio packet buffers/FIFOs including fl of 64 bytes).
+
+Per-frame type structural validation can and should be performed further
+down the processing chain for those types that are understood.
+ 
+"""
+ 
+def checkAesFrameIntegrity (frame = bytearray()):
+    
+    #fl >= 4 (type, seqNum/il, bl, trailer bytes)?
+    if (frame.length < 4):
+        return None
+    #fl may be further constrained by system limits, eg to <= 63 for 'small' frame
+    elif (frame.length > 63):
+        return None
+    #type (the first frame byte) is never 0x00, 0x80, 0x7f, 0xff.
+    elif ((frame[0] == 0x00) or (frame[0]== 0x80) or (frame[0]==0x7F) or (frame[0] == 0xFF)):
+        return None
+    #il <= 8 for initial / small frame implementations (internal node ID is 8 bytes)
+    elif ((frame[2] & 0x0F) > 8):
+        hd
+        
+        
     
 #########################################################################
 # Unit tests                                                            #
