@@ -26,7 +26,7 @@ class DatagramProtocol(TwistedDatagramProtocol):
     def datagramReceived(self, data, (host, port)):
         try:
             
-            if data[len(data)-1] == 0x80: # 0x80 in the last byte indicates aes-gcm encryption
+            if (((data[0] & 0x80) == True) && (data[data.length-1] == 0x80)) # Top bit of the first byte indicates encryption and 0x80 on the end is aesgcm 
             
                 print('aes-gcm encrypted data received')
                 
