@@ -64,9 +64,9 @@ class SensorLocation(models.Model):
 	location_ref = models.ForeignKey(Location, verbose_name='location', blank=True, null=True)
 	aes_key = models.CharField("AES key", max_length=256, blank=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
-	updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
-	last_measurement = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
-	finish = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
+	updated = models.DateTimeField(auto_now_add=False, auto_now=True, blank=True, null=True)
+	last_measurement = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
+	finish = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
 
 # 	duration = models.CharField(max_length = 50, blank = True)
