@@ -127,6 +127,17 @@ class Measurement(models.Model):
 
     @staticmethod
     def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
+'''
+1) Create a Meaurement object using the packet_timestamp
+2) Add the message counter to the Measurement record
+3) Using the node_id, get the Sensor record. Get the SensorLocation for that Sensor with Finish=null
+        (SensorLocation.objects.filter(sensor_ref = mysensor.id, finish=null))
+        Create a Measurement object with the correct sensor_location_ref
+4) Add a Reading record for the source_ip_address (using the Measurement.id as the field Reading.measurement_ref)
+5) Add a temperature Reading record
+6) Add a relative humidity Reading record
+7) etc.
+'''        
 
         return "12345"
 

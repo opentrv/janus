@@ -40,7 +40,7 @@ class TestCreateSeveralFromUDP(TestMeasurement):
                                                                        message_counter=5, node_id="A3 E5 2A 21",
                                                                        decrypted_payload=bytes(b'{"@":"c2a1","+":5,"T|C16":124,"H|%":81,"O":1}'))
 
-        measurement1 = Measurement.objects.filter(created=datetime.datetime(2015, 1, 1, 15, 11, 17, tzinfo=timezone.utc))
+        measurement1 = Measurement.objects.filter(packet_timestamp=datetime.datetime(2015, 1, 1, 15, 11, 17, tzinfo=timezone.utc))
 
         self.assertEqual(1, len(measurement1))
 
