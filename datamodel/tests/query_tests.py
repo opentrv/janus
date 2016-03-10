@@ -14,7 +14,7 @@ from django.utils import timezone
 import mock
 
 
-class TestMeasurement(TestCase):
+class TestDatamodel(TestCase):
     pass
 
 # class TestConvertDatetime(TestCase):
@@ -22,24 +22,24 @@ class TestMeasurement(TestCase):
 #     def test(self):
 #         self.fail('TODO: test datetime converter')
 
-class TestToDict(TestMeasurement):
+#class TestToDict(TestDatamodel):
+#
+#    def test(self):
+#        measurement = Measurement(created=datetime.datetime(2015, 1, 1, 15, 11, 17), packet_timestamp=datetime.datetime(2015, 1, 1, 15, 11, 17), measurement_type='temperature', value='11.1')
+#        expected_measurement_dict = {
+#            'sensor_location_ref': None,
+#            'measurement_type': 'temperature',
+#            'value': '11.1',
+#           'value_integer': None,
+#            'value_float': None,
+#            'unit': None,
+#            'created': '2015-01-01T15:11:17',
+#            'updated': '2015-01-01T15:11:17'
+#        }
+#        measurement_dict = Measurement.to_dict(measurement)
+#        self.assertEqual(measurement_dict, expected_measurement_dict)
 
-    def test(self):
-        measurement = Measurement(created=datetime.datetime(2015, 1, 1, 15, 11, 17), updated=datetime.datetime(2015, 1, 1, 15, 11, 17), measurement_type='temperature', value='11.1')
-        expected_measurement_dict = {
-            'sensor_location_ref': None,
-            'measurement_type': 'temperature',
-            'value': '11.1',
-            'value_integer': None,
-            'value_float': None,
-            'unit': None,
-            'created': '2015-01-01T15:11:17',
-            'updated': '2015-01-01T15:11:17'
-        }
-        measurement_dict = Measurement.to_dict(measurement)
-        self.assertEqual(measurement_dict, expected_measurement_dict)
-
-class TestGetSensorFromPartialNodeId(TestMeasurement):
+class TestGetSensorFromPartialNodeId(TestDatamodel):
 
     def test(self):
         partial_node_id = 'TE'
@@ -48,7 +48,7 @@ class TestGetSensorFromPartialNodeId(TestMeasurement):
         returned_sensor = SensorQuery().get_sensor_from_partial_node_id(partial_node_id)
         self.assertEqual(returned_sensor, sensor)
 
-class TestGetCurrentSensorLocationFromSensor(TestMeasurement):
+class TestGetCurrentSensorLocationFromSensor(TestDatamodel):
 
     def test(self):
         sensor = Sensor(node_id='TEST1', created=datetime.datetime(2015, 1, 1, 15, 11, 17, tzinfo=timezone.utc), updated=datetime.datetime(2015, 1, 1, 15, 11, 17, tzinfo=timezone.utc))
@@ -68,7 +68,7 @@ class TestGetCurrentSensorLocationFromSensor(TestMeasurement):
         sensor_location = SensorLocationQuery().get_current_sensor_location(returned_sensor)
         self.assertEqual("yes I'm the one", sensor_location.aes_key)
 
-class TestInit(TestMeasurement):
+class TestInit(TestDatamodel):
 
     def test(self):
         pass

@@ -7,6 +7,7 @@ from datamodel.models import Location
 from datamodel.models import Address
 from datamodel.models import Sensor
 from datamodel.models import Measurement
+from datamodel.models import Reading
 from datamodel.datamodelquery import SensorLocationQuery
 
 class SensorLocationListFilter(admin.SimpleListFilter):
@@ -74,11 +75,16 @@ class AddressAdmin(admin.ModelAdmin):
 		model = Address
 
 class MeasurementAdmin(admin.ModelAdmin):
-	list_display = ["sensor_location_ref","measurement_type","value","value_integer","value_float", "unit", "created","updated" ]
+	list_display = ["sensor_location_ref","message_counter", "created","packet_timestamp" ]
 
 	class Metai5:
 		model = Measurement
 
+class ReadingAdmin(admin.ModelAdmin):
+	list_display = ["measurement_ref","measurement_type","value","value_integer","value_float", "unit", "created","updated" ]
+
+	class Metai6:
+		model = Measurement
 
 admin.site.register(Sensor, SensorAdmin)
 admin.site.register(SensorMetadata, SensorMetadataAdmin)
@@ -86,6 +92,7 @@ admin.site.register(SensorLocation, SensorLocationAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(Measurement, MeasurementAdmin)
+admin.site.register(Reading, ReadingAdmin)
 
 # list filter support:
 

@@ -92,43 +92,62 @@ class SensorLocation(models.Model):
 
 class Measurement(models.Model):
     sensor_location_ref = models.ForeignKey(SensorLocation, verbose_name='sensor-location', blank=True, null=True)
-    measurement_type = models.CharField(max_length=50, blank=True, null=True)
-    value = models.CharField(max_length=50, blank=True, null=True)
-    value_integer = models.IntegerField("integer value", blank=True, null=True)
-    value_float = models.FloatField("floating point value", blank=True, null=True)
-    unit = models.CharField(max_length=50, blank=True, null=True)
+    message_counter = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
-    updated = models.DateTimeField(auto_now_add=False, auto_now=True, null=True)
+    packet_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
     class Meta:
         permissions = (
             ('view_measurement', 'Can see measurements'),
         )
 
-    @classmethod
-    def to_dict(cls, measurement):
-        if hasattr(measurement, '__iter__'):  # isinstance(measurement, list):
-            measurements = measurement
-            output = []
-            for measurement in measurements:
-                output += [cls.to_dict(measurement)]
-            return output
-        return {
-            'sensor_location_ref': measurement.sensor_location_ref,
-            'measurement_type': measurement.measurement_type,
-            'value': measurement.value,
-            'value_integer': measurement.value_integer,
-            'value_float': measurement.value_float,
-            'unit': measurement.unit,
-            'created': measurement.created.isoformat(),
-            'updated': measurement.updated.isoformat(),
-        }
+#    @classmethod
+#    def to_dict(cls, measurement):
+#        if hasattr(measurement, '__iter__'):  # isinstance(measurement, list):
+#            measurements = measurement
+#            output = []
+#            for measurement in measurements:
+#                output += [cls.to_dict(measurement)]
+#            return output
+#        return {
+#            'sensor_location_ref': measurement.sensor_location_ref,
+#            'measurement_type': measurement.measurement_type,
+#            'value': measurement.value,
+#            'value_integer': measurement.value_integer,
+#            'value_float': measurement.value_float,
+#            'unit': measurement.unit,
+#            'created': measurement.created.isoformat(),
+#            'updated': measurement.updated.isoformat(),
+#        }
 
 
     def __unicode__(self):
+        # return str(self.created)
+        return str(self.id)
+
+    @staticmethod
+    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
+
+        return "12345"
+
+
+class Reading(models.Model):
+    measurement_ref = models.ForeignKey(Measurement, verbose_name='measurement')
+    measurement_type = models.CharField(max_length=50, blank=True, null=True)
+    value = models.CharField(max_length=50, blank=True, null=True)
+    value_integer = models.IntegerField("integer value", blank=True, null=True)
+    value_float = models.FloatField("floating point value", blank=True, null=True)
+    unit = models.CharField(max_length=50, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True, blank=True, null=True)
+
+    class Meta:
+        permissions = (
+            ('view_measurement', 'Can see measurements'),
+        )
+
+    def __unicode__(self):
         return self.measurement_type
-
-
 
 
 # class ParentModel(models.Model):
