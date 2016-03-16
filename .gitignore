@@ -14,3 +14,4 @@ deployment/playbooks/site.retry
 .project
 .pydevproject
 udp*.log
+playbooks/site.retry
