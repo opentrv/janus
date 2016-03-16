@@ -67,7 +67,7 @@ if __name__ == "__main__":
     
 
     #sendStaticPacket(encryptedPacket)
-    sendPacketFromLogFile("udplog_01-03-2016.log")
+    sendPacketFromLogFile("udplog_02-03-2016.log")
     
     
     
