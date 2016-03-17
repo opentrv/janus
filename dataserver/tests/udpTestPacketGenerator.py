@@ -65,9 +65,13 @@ if __name__ == "__main__":
                                   0x51,0x06,0xe1,0x40,0xff,0x29,0x84,0xdf,\
                                   0x71,0xc0,0x48,0x10,0xc7,0xfc,0x80])
     
+    # or static test comment out the sendPacketFRomLogFile and use the static test instead.
+    # a couple of includes at the top will need to be commented out too.
 
     #sendStaticPacket(encryptedPacket)
+    
     sendPacketFromLogFile("udplog_02-03-2016.log")
+
     
     
     

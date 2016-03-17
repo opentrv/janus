@@ -11,11 +11,12 @@ from cryptography.hazmat.primitives.ciphers import (
 from cryptography.hazmat.backends import default_backend
 
 
-#for test case to work, we need to comment out the next 3 lines!! ToDo Ill have to get my head around pyunit
+#for test case to work, we need to comment out the next 2 lines!! ToDo Ill have to get my head around pyunit
 from datamodel.datamodelquery import SensorLocationQuery
 from datamodel.datamodelquery import SensorQuery
 
 logger = logging.getLogger(__name__)
+
 
 # AESGCM encoding 101
 #--------------------
@@ -53,6 +54,7 @@ class OpenTRVAesgcmPacket(object):
     
     # Class instance expects the encrypted packet, stored as a bytearray and the  6 bytes of 
     # The 6 byte leaf node ID required for the decrypt (the full ID is 8cbytes long) also stored as a byte array.
+
     def __init__ (self,encryptedPacket= bytearray(),test=False):  
       
       print('class init called')
@@ -66,6 +68,7 @@ class OpenTRVAesgcmPacket(object):
                         "sixByteID": bytearray()
                         }
           self.getPresharedData()
+
     
       else: # test without reading from DB
           
@@ -99,6 +102,7 @@ class OpenTRVAesgcmPacket(object):
         
         OTASensorIDStr=binascii.hexlify(OTASensorID)
         print (OTASensorIDStr)
+
         
         #database queries   
         
@@ -106,13 +110,13 @@ class OpenTRVAesgcmPacket(object):
         returned_sensor=SensorQuery().get_sensor_from_partial_node_id(OTASensorIDStr)
         fullSensorID  = returned_sensor.node_id
         sixByteSensorID = fullSensorID[0:len(fullSensorID)-4]
-        
-        
         print('six byte SensorID; %s' %sixByteSensorID)
+
         
         #extract the aes key from the location table
         sensor_location = SensorLocationQuery().get_current_sensor_location(returned_sensor)    
         key = sensor_location.aes_key
+
         print('key; %s' %key)
         
         # convert ascii strings to hex
@@ -122,6 +126,7 @@ class OpenTRVAesgcmPacket(object):
     def getKey (self):
         return self.preshared["key"]
       
+
      # Retrieve IV/nonce from raw message and other information from the unencrypted trailer 
      # 6 bytes of ID (2 or more of which will come over the air the rest from a DB lookuo)
      # 3 bytes of resart counter - retrieved from the trailer
@@ -199,13 +204,14 @@ def decrypt(key, associated_data, iv, ciphertext, tag):
         ret= decryptor.update(str(ciphertext)) + decryptor.finalize()
 
     except Exception as e:
-        logger.error (' Failed to de-crypt Measurement with exception: {}: {}'.format(e.__class__.__name__, e))
+        print (' Failed to de-crypt Measurement with exception: {}: {}'.format(e.__class__.__name__, e))
         ret = None
         
     
     return ret
 
-# Interface to the AESGCM decryption object. 
+# Interface to the AESGCM decryption subsystem. 
+# --------------------------------------------
 # Returns the decrypted message body: two status bytes and a quasi JSON object
 # when passed an encrypted packet, along with the pre-shared key and the pre-shared
 # 6 byte leaf-node ID. The pre-shared values are extracted from a database, using 
@@ -214,11 +220,12 @@ def decrypt(key, associated_data, iv, ciphertext, tag):
 def extractMessageFromEncryptedPacket (encryptedPacket,test=False):
     
     print('OpenTRVAesgcmPacket - called')
+    
     # openTRVAesgcmPacket object operates on the received packet data
     packet = OpenTRVAesgcmPacket(encryptedPacket,test)
     
-    #logger.info('OpenTRVAesgcmPacket - returned')
     print('OpenTRVAesgcmPacket - returned')
+
             
     plainText = decrypt(
                 packet.getKey(),
@@ -285,7 +292,7 @@ def checkAesFrameIntegrity (frame = bytearray()):
         return None
     #il <= 8 for initial / small frame implementations (internal node ID is 8 bytes)
     elif ((frame[2] & 0x0F) > 8):
-        None
+        return None
         
 
         
@@ -303,7 +310,9 @@ if __name__ == "__main__":
 
    
     
-    #Test packet generated from SecureFrameTest.java with an all 0 key NB - the length byte has not been sent
+
+    #Test packet generated from SecureFrameTest.java with an all 0 key
+
     encryptedPacket = bytearray ([0x3f,0xcf,0x04,0xaa,0xaa,0xaa,0xaa,0x20,\
                                   0xb3,0x45,0xf9,0x29,0x69,0x57,0x0c,0xb8,\
                                   0x28,0x66,0x14,0xb4,0xf0,0x69,0xb0,0x08,\
@@ -332,7 +341,7 @@ if __name__ == "__main__":
     
     plainText=extractMessageFromEncryptedPacket (encryptedPacket,TEST)
     
-    # ToDo:check Plain text is the same as the input
+    # ToDo:check Plain text is the same as the input add an assert to PyUnit
     input = (b'\x7f\x11' + "{\"b\":1")
    
     #if plainText == input:

@@ -26,16 +26,19 @@ logger = logging.getLogger(__name__)
 class DatagramProtocol(TwistedDatagramProtocol):
 
     def datagramReceived(self, packetData, (host, port)):
+        #packetData is of type string (weirdly) so needs to be converted to a bytearray
         data = bytearray(packetData)
+        
+        #The original packet had a length byte on the front of it which has been stripped by the
+        #radio layer. This byte byte is needed by the encryption algorithm and so has to be deduced
+        #from the incoming packet length and stuck pack on the front of the packet.
         packetLength = len(packetData)
         data.insert(0,packetLength)
        
         logger.info('packet length is: %d' %len(data))
+        logger.info('datagram Received, 2nd byte = %x' %data[1])
         
         try:
-            logger.info (type(packetData))
-            logger.info (type(data))
-            logger.info('datagram Received, 2nd byte = %x' %data[1])
             
             #if (((data[0] & 0x80) == True) and (data[data.length-1] == 0x80)): # Top bit of the first byte indicates encryption and 0x80 on the end is aesgcm 
             if (data[1] & 0x80) !=0:    #MSB of second byte indicates encryption
@@ -47,6 +50,10 @@ class DatagramProtocol(TwistedDatagramProtocol):
                   
             else:
                 logger.info('unencrypted data received')
+                #!!ToDo!! test the crc, remove the header and crc before assigning to udpdata
+                #the measurement object will fail right now for unencrypted packets.
+                #Since there are no plans to use unencrypted data at the moment this
+                #has not been done
                 udpdata = data
                
              
@@ -58,7 +65,6 @@ class DatagramProtocol(TwistedDatagramProtocol):
             
             #Call to the measurement object to record the data
             #create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload)
-            
         except Exception as e:
             logger.error('Received: data from {}. Failed to create Measurement with exception: {}: {}'.format(host, e.__class__.__name__, e))
         
