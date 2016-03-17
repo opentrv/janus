@@ -1,5 +1,8 @@
+
 import json
+import sys
 import opentrv_sensor.models
+from opentrv_sensor.aesgcm import extractMessageFromEncryptedPacket
 import logging
 from django.utils import timezone
 from twisted.internet.protocol import DatagramProtocol as TwistedDatagramProtocol
@@ -22,22 +25,48 @@ logger = logging.getLogger(__name__)
 
 class DatagramProtocol(TwistedDatagramProtocol):
 
-    def datagramReceived(self, data, (host, port)):
+    def datagramReceived(self, packetData, (host, port)):
+        #packetData is of type string (weirdly) so needs to be converted to a bytearray
+        data = bytearray(packetData)
+        
+        #The original packet had a length byte on the front of it which has been stripped by the
+        #radio layer. This byte byte is needed by the encryption algorithm and so has to be deduced
+        #from the incoming packet length and stuck pack on the front of the packet.
+        packetLength = len(packetData)
+        data.insert(0,packetLength)
+       
+        logger.info('packet length is: %d' %len(data))
+        logger.info('datagram Received, 2nd byte = %x' %data[1])
+        
         try:
-            udpdata = data
-            print('data received')
+            
+            #if (((data[0] & 0x80) == True) and (data[data.length-1] == 0x80)): # Top bit of the first byte indicates encryption and 0x80 on the end is aesgcm 
+            if (data[1] & 0x80) !=0:    #MSB of second byte indicates encryption
+                
+                logger.info('aes-gcm encrypted data received')
+    
+                # decrypt the incoming packet  
+                udpdata=extractMessageFromEncryptedPacket (data)     
+                  
+            else:
+                logger.info('unencrypted data received')
+                #!!ToDo!! test the crc, remove the header and crc before assigning to udpdata
+                #the measurement object will fail right now for unencrypted packets.
+                #Since there are no plans to use unencrypted data at the moment this
+                #has not been done
+                udpdata = data
+               
+             
             hexdata = udp_logger.bintohex(udpdata)
-#            udp_logger.log_udp_packets_file(host,hexdata)
             fdata = udp_logger.formatwithspace(hexdata)
             udp_logger.log_udp_packets_file(host,fdata)
-            print('log updated')
-            measurements = opentrv_sensor.models.Measurement.create_from_udp(data, timezone.now())
-            logger.info('Received: {}, from {}. Added to database.'.format(data, host))
-            if len(measurements['failure']):
-                logger.info('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
-                logger.error('Received: {}, from {}. Some measurements failed: failures: {}'.format(data, host, measurements['failure']))
+            
+            logger.info('received udp data from {} : {}'.format (host,fdata))
+            
+            #Call to the measurement object to record the data
+            #create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload)
         except Exception as e:
-            logger.error('Received: {}, from {}. Failed to create Measurement with exception: {}: {}'.format(data, host, e.__class__.__name__, e))
+            logger.error('Received: data from {}. Failed to create Measurement with exception: {}: {}'.format(host, e.__class__.__name__, e))
         
 class UDPServer(object):
 
@@ -45,6 +74,7 @@ class UDPServer(object):
         self.protocol = DatagramProtocol()
 
     def start(self):
+        logging.info ('udp server starting')
         reactor.listenUDP(9999, self.protocol)
         reactor.run()
 

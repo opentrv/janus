@@ -3,14 +3,10 @@
 - name: main playbook
   hosts: web
   vars:
-    db_password: "secret"
+    db_password: "{{ database_password }}"
     opentrv_repo_url: https://github.com/opentrv/janus
 
   tasks:
-    - name: load vault
-      include_vars: "vars/vault-default.yml"
-      when: is_production
-#      no_log: true
 
     - name: install apt packages
       apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
@@ -48,6 +44,13 @@
       notify:
         - restart gunicorn
         - restart udp_server
+
+    - name: python base settings
+      template: src=../templates/base.py.j2 dest=/srv/opentrv/source/opentrv/settings/base.py
+      notify: restart gunicorn
+      become: yes
+      become_user: opentrv
+      when: is_production
 
     - name: create database directory
       file: path=/srv/opentrv/database state=directory group=opentrv
