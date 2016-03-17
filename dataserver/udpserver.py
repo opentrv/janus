@@ -1,7 +1,6 @@
 
 import json
 import sys
-import opentrv_sensor.models
 from opentrv_sensor.aesgcm import extractMessageFromEncryptedPacket
 import logging
 from django.utils import timezone
@@ -30,8 +29,8 @@ class DatagramProtocol(TwistedDatagramProtocol):
         data = bytearray(packetData)
         
         #The original packet had a length byte on the front of it which has been stripped by the
-        #radio layer. This byte byte is needed by the encryption algorithm and so has to be deduced
-        #from the incoming packet length and stuck pack on the front of the packet.
+        #radio layer. This byte is needed by the decryption algorithm and so has to be deduced
+        #from the incoming packet length and stuck back on the front of the packet.
         packetLength = len(packetData)
         data.insert(0,packetLength)
        
@@ -40,16 +39,22 @@ class DatagramProtocol(TwistedDatagramProtocol):
         
         try:
             
-            #if (((data[0] & 0x80) == True) and (data[data.length-1] == 0x80)): # Top bit of the first byte indicates encryption and 0x80 on the end is aesgcm 
             if (data[1] & 0x80) !=0:    #MSB of second byte indicates encryption
                 
-                logger.info('aes-gcm encrypted data received')
+                logger.info('encrypted data received')
     
                 # decrypt the incoming packet  
-                udpdata=extractMessageFromEncryptedPacket (data)     
+                udpdata,sensorID = extractMessageFromEncryptedPacket (data)
+                
+                # ToDo: the message counter associated with the packet needs to be returned from the aesgcm object
+                # and given to the measurement object to store. This will then be compared to the counter value in the next 
+                # message that comes in to ensure that the next message counter is bigger than the last. This helps to 
+                # prevent replay attacks.
+                
+                messageCounter =0
                   
             else:
-                logger.info('unencrypted data received')
+                logger.error('unencrypted data received')
                 #!!ToDo!! test the crc, remove the header and crc before assigning to udpdata
                 #the measurement object will fail right now for unencrypted packets.
                 #Since there are no plans to use unencrypted data at the moment this
@@ -64,7 +69,8 @@ class DatagramProtocol(TwistedDatagramProtocol):
             logger.info('received udp data from {} : {}'.format (host,fdata))
             
             #Call to the measurement object to record the data
-            #create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload)
+            #create_from_udp(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S", host, messageCounter, sensorID, udpdata)
+            
         except Exception as e:
             logger.error('Received: data from {}. Failed to create Measurement with exception: {}: {}'.format(host, e.__class__.__name__, e))
         
