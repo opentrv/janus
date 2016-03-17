@@ -45,6 +45,13 @@
         - restart gunicorn
         - restart udp_server
 
+    - name: python base settings
+      template: src=../templates/base.py.j2 dest=/srv/opentrv/source/opentrv/settings/base.py
+      notify: restart gunicorn
+      become: yes
+      become_user: opentrv
+      when: is_production
+
     - name: create database directory
       file: path=/srv/opentrv/database state=directory group=opentrv
       become: yes

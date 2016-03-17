@@ -15,3 +15,5 @@ deployment/playbooks/site.retry
 .pydevproject
 udp*.log
 playbooks/site.retry
+deployment/host_vars/*blue
+deployment/inventories/*blue.ini
