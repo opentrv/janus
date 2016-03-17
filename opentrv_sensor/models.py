@@ -66,6 +66,10 @@ class Measurement(models.Model):
     
     @staticmethod
     def create_from_udp(msg, datetime=None):
+	#msg = '{"@":"0a45","+":2,"vac|h":9}'
+	#msg = '{"@":"0a45","+":2,"b":0}'
+	#msg = '{"@":"0a45","+":2,"vac|h":9,"T|C16":201,"L":0}' #multiple readings
+
         output = {'success': [], 'failure': []}
         json_object = json.loads(msg)
         measurements = {}
@@ -77,6 +81,8 @@ class Measurement(models.Model):
             else:
                 measurements[key] = val
 
+
+#this for loop is iterated for every reading
         for key, val in measurements.iteritems():
             if '|' in key:
                 type_, units = key.split('|')

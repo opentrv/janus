@@ -120,3 +120,6 @@ def readme(request):
     text = f.read()
     return HttpResponse(markdown.markdown(text))
 
+def get_sensor_location_from_nodeid(nodeid):
+	SensorLocation.objects.filter(sensor_ref__node_id = 'A3 E5 2A 21')
+
