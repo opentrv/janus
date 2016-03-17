@@ -65,7 +65,8 @@ class OpenTRVAesgcmPacket(object):
           print ('DB lookup route taken')
           self.preshared = {
                         "key": bytearray(),
-                        "sixByteID": bytearray()
+                        "sixByteID": bytearray(),
+                        'fullID': str()
                         }
           self.getPresharedData()
 
@@ -108,6 +109,7 @@ class OpenTRVAesgcmPacket(object):
         
         #find the right sensor  
         returned_sensor=SensorQuery().get_sensor_from_partial_node_id(OTASensorIDStr)
+        self.preshared['fullID'] = returned_sensor.node_id
         fullSensorID  = returned_sensor.node_id
         sixByteSensorID = fullSensorID[0:len(fullSensorID)-4]
         print('six byte SensorID; %s' %sixByteSensorID)
@@ -125,6 +127,9 @@ class OpenTRVAesgcmPacket(object):
     
     def getKey (self):
         return self.preshared["key"]
+    
+    def getSensorID(self):
+        return(self.preshared['fullID'])
       
 
      # Retrieve IV/nonce from raw message and other information from the unencrypted trailer 
@@ -238,7 +243,7 @@ def extractMessageFromEncryptedPacket (encryptedPacket,test=False):
     else: # Put any new encryption scheme stuff here.
         logger.error('unknown encryption scheme encountered in incoming UDP data')
     
-    return (plainText,packet.getKey())
+    return (plainText,packet.getSensorID())
     
  
  

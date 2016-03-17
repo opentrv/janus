@@ -1,6 +1,6 @@
 from dateutil import parser as date_parser
 import json
-
+import binascii
 from django.db import models
 from django.utils import timezone
 
@@ -146,10 +146,10 @@ class Reading(models.Model):
         return self.measurement_type
 
     @staticmethod
-    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
+    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, hex_decrypted_payload):
 	
 
-
+		
 
 
 	'''
@@ -170,7 +170,8 @@ class Reading(models.Model):
 	'''
 	
 
-
+	#node_id = binascii.hexlify(hex_node_id)
+	decrypted_payload = str(hex_decrypted_payload)
 
 	
         

@@ -20,6 +20,7 @@
         - libpq-dev
         - python-virtualenv
         - lib32ncurses5-dev
+        - libffi-dev
 
     - name: create opentrv group
       group: name=opentrv state=present gid=510

@@ -1,6 +1,7 @@
 
 import json
 import sys
+from datamodel.models import Reading
 from opentrv_sensor.aesgcm import extractMessageFromEncryptedPacket
 import logging
 from django.utils import timezone
@@ -69,7 +70,7 @@ class DatagramProtocol(TwistedDatagramProtocol):
             logger.info('received udp data from {} : {}'.format (host,fdata))
             
             #Call to the measurement object to record the data
-            #create_from_udp(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S", host, messageCounter, sensorID, udpdata)
+            Reading.create_from_udp(timezone.now(), host, messageCounter, sensorID, udpdata)
             
         except Exception as e:
             logger.error('Received: data from {}. Failed to create Measurement with exception: {}: {}'.format(host, e.__class__.__name__, e))
