@@ -219,22 +219,26 @@ def decrypt(key, associated_data, iv, ciphertext, tag):
 
 def extractMessageFromEncryptedPacket (encryptedPacket,test=False):
     
-    print('OpenTRVAesgcmPacket - called')
     
-    # openTRVAesgcmPacket object operates on the received packet data
-    packet = OpenTRVAesgcmPacket(encryptedPacket,test)
+    # Check if last byte in encrpytedPacket is 0x80, indicating that it is aesgcm encrypted
+    if encryptedPacket[len(encryptedPacket)-1] ==  0x80:
+        logger.info ("aesgcm encryption used")
     
-    print('OpenTRVAesgcmPacket - returned')
-
+        # openTRVAesgcmPacket object operates on the received packet data
+        packet = OpenTRVAesgcmPacket(encryptedPacket,test)
+    
             
-    plainText = decrypt(
-                packet.getKey(),
-                packet.aad(),
-                packet.iv(),
-                packet.ciphertext(),
-                packet.tag())
+        plainText = decrypt(
+        packet.getKey(),
+        packet.aad(),
+        packet.iv(),
+        packet.ciphertext(),
+        packet.tag())
     
-    return (plainText)
+    else: # Put any new encryption scheme stuff here.
+        logger.error('unknown encryption scheme encountered in incoming UDP data')
+    
+    return (plainText,packet.getKey())
     
  
  
