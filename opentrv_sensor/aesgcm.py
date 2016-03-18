@@ -243,6 +243,7 @@ def extractMessageFromEncryptedPacket (encryptedPacket,test=False):
     else: # Put any new encryption scheme stuff here.
         logger.error('unknown encryption scheme encountered in incoming UDP data')
     
+
     return (plainText,packet.getSensorID())
     
  
