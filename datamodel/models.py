@@ -3,6 +3,7 @@ import json
 import binascii
 from django.db import models
 from django.utils import timezone
+import array
 
 
 class Sensor(models.Model):
@@ -127,6 +128,7 @@ class Measurement(models.Model):
 
 
 
+
 class Reading(models.Model):
     measurement_ref = models.ForeignKey(Measurement, verbose_name='measurement')
     measurement_type = models.CharField(max_length=50, blank=True, null=True)
@@ -144,121 +146,116 @@ class Reading(models.Model):
 
     def __unicode__(self):
         return self.measurement_type
+       
+       
 
     @staticmethod
-    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, hex_decrypted_payload):
+    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
 	
+		'''
+		1) Create a Meaurement object using the packet_timestamp
+		2) Add the message counter to the Measurement record
+		3) Using the node_id, get the Sensor record. Get the SensorLocation for that Sensor with Finish=null
+			(SensorLocation.objects.filter(sensor_ref = mysensor.id, finish=null))
+			Create a Measurement object with the correct sensor_location_ref
+		4) Add a Reading record for the source_ip_address (using the Measurement.id as the field Reading.measurement_ref)
+		Cant be created as Reading.measurement_ref should be an instance of Measurement. but measurement id can be accessed using 		 Reading.measurement_ref__id. 
+		5) Add a temperature Reading record
+		6) Add a relative humidity Reading record
+		7) etc.
+	
+		for 4,5,6 refer to the previous code. Understand how it is used and understand mock-patch testing.	   
+	
+		'''
+	    	
+	    #ToDo convert the first two bytes into 3 json objects - CallForHeat (0/1) valve position (0-100) flags (0-255)
+	    # see https://raw.githubusercontent.com/DamonHD/OpenTRV/master/standards/protocol/IoTCommsFrameFormat/SecureBasicFrame-V0.1-201601.txt		
+	    	
+	    	
+	    #The incoming Json string doesnt have a close bracket on it. It may also be padded out to a fixed length with 0s
+	    # so we need to add a } either at the position of the first padding 0 or at the end.
+	    
+	    # Strip the first two bytes off of the incoming message - they are not Json formatted and need to be handled separately
+    
+     	#Test to see if there is any message beyond the first two bytes (which are always present)
+	 	if len(decrypted_payload) > 2:
+	 		print ('message > 2 bytes')
+			st = decrypted_payload[2:] # extract the json string	
+			print ('packet: {}'.format(st))
+			
+			# find out how many 0 padding bytes there are
+			
+			padding_len = ord(st[len(st)-1])
+			
+			print ('There are %d padding bytes'%padding_len)
+			
+			#remove padding bytes and add a }
+			json_string = st[0:len(st)-(padding_len+1)] + '}'
+			
+			print (json_string)
+			
+		loc=SensorLocation.objects.get(sensor_ref__node_id = node_id)
+		measurement = Measurement (sensor_location_ref = loc, packet_timestamp = packet_timestamp, message_counter = message_counter, )
+		measurement.save()
+        
+ 	
+		json_object = json.loads(json_string)
+		measurements = {}
+		for key, val in json_object.iteritems():
+		    if key == '@':
+		        sensor_id = val
+		    elif key == '+':
+		        continue
+		    else:
+		        measurements[key] = val
 
+
+		#this for loop is iterated for every reading
+		for key, val in measurements.iteritems():
+		    if '|' in key:
+		        type_, units = key.split('|')
+		    else:
+		        type_, units = (key, None)
+		    
+		    type_ = {'vac': 'vacancy',
+		                 'T': 'temperature',
+		                 'L': 'light',
+		                 'B': 'battery',
+		                 'v': 'valve_open_percent',
+		                 'H': 'relative_humidity',
+		                 'tT': 'target_temperature',
+		                 'vC': 'valve_travel',
+		                 'O': 'occupancy',
+		                 'b': 'boiler',
+		        }[type_]
+
+		if type_ == 'temperature' or type_ == 'target_temperature':
+		        if units == 'C16':
+		            val = val / 16.
+		        elif units == 'C':
+		            pass
+		        else:
+		            raise Exception('Unrecognised unit of temperature')
+		if type_ == 'battery':
+		        if units == 'cV':
+		            val = val * 0.01
+		        elif units == 'V':
+		            pass
+		        elif units == 'mV':
+		            val = val * 0.001
+		        else:
+		            raise Exception('Unrecognised unit of battery')
+		if type_ == 'boiler':
+		        if val not in [0, 1]:
+		            raise Exception('Invalid value for boiler: {}, allowed values: [0, 1]'.format(val))
 		
-
-
-	'''
-	1) Create a Meaurement object using the packet_timestamp
-	2) Add the message counter to the Measurement record
-	3) Using the node_id, get the Sensor record. Get the SensorLocation for that Sensor with Finish=null
-		(SensorLocation.objects.filter(sensor_ref = mysensor.id, finish=null))
-		Create a Measurement object with the correct sensor_location_ref
-	4) Add a Reading record for the source_ip_address (using the Measurement.id as the field Reading.measurement_ref)
-	Cant be created as Reading.measurement_ref should be an instance of Measurement. but measurement id can be accessed using 		 Reading.measurement_ref__id. 
-	5) Add a temperature Reading record
-	6) Add a relative humidity Reading record
-	7) etc.
-
-	for 4,5,6 refer to the previous code. Understand how it is used and understand mock-patch testing.	   
-	
-
-	'''
-	
-
-	#node_id = binascii.hexlify(hex_node_id)
-	decrypted_payload = str(hex_decrypted_payload)
-
-	
-        
-	#retreiving sensor location ref with that specific node id.
-	loc = SensorLocation.objects.get(sensor_ref__node_id = node_id)
-
-	measurement = Measurement (sensor_location_ref = loc, packet_timestamp = packet_timestamp, message_counter = message_counter, )
-	measurement.save()
-
-	
-
-        
-        json_object = json.loads(decrypted_payload)
-        measurements = {}
-        for key, val in json_object.iteritems():
-            if key == '@':
-                sensor_id = val
-            elif key == '+':
-                continue
-            else:
-                measurements[key] = val
-
-
-#this for loop is iterated for every reading
-        for key, val in measurements.iteritems():
-            if '|' in key:
-                type_, units = key.split('|')
-            else:
-                type_, units = (key, None)
-            
-            type_ = {'vac': 'vacancy',
-                         'T': 'temperature',
-                         'L': 'light',
-                         'B': 'battery',
-                         'v': 'valve_open_percent',
-                         'H': 'relative_humidity',
-                         'tT': 'target_temperature',
-                         'vC': 'valve_travel',
-                         'O': 'occupancy',
-                         'b': 'boiler',
-                }[type_]
-
-            if type_ == 'temperature' or type_ == 'target_temperature':
-                    if units == 'C16':
-                        val = val / 16.
-                    elif units == 'C':
-                        pass
-                    else:
-                        raise Exception('Unrecognised unit of temperature')
-            if type_ == 'battery':
-                    if units == 'cV':
-                        val = val * 0.01
-                    elif units == 'V':
-                        pass
-                    elif units == 'mV':
-                        val = val * 0.001
-                    else:
-                        raise Exception('Unrecognised unit of battery')
-            if type_ == 'boiler':
-                    if val not in [0, 1]:
-                        raise Exception('Invalid value for boiler: {}, allowed values: [0, 1]'.format(val))
-
-            reading = Reading(measurement_ref = measurement, measurement_type=type_, value=val)                
-            reading.save()
+		reading = Reading(measurement_ref = measurement, measurement_type=type_, value=val)                
+		reading.save()
                 
 
-
-
-
-
-	
-
-	
-
-
-        
     def create_sensor_record(node_id):
-	sensor = Sensor(node_id = node_id)
-	sensor.save()
-
-
-
-
-
-
-
-
+		sensor = Sensor(node_id = node_id)
+		sensor.save()
 
 
 
