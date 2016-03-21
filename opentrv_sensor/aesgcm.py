@@ -239,6 +239,7 @@ def extractMessageFromEncryptedPacket (encryptedPacket,test=False):
         packet.iv(),
         packet.ciphertext(),
         packet.tag())
+
     
     else: # Put any new encryption scheme stuff here.
         logger.error('unknown encryption scheme encountered in incoming UDP data')

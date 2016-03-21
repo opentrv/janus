@@ -70,7 +70,9 @@ class DatagramProtocol(TwistedDatagramProtocol):
             logger.info('received udp data from {} : {}'.format (host,fdata))
             
             #Call to the measurement object to record the data
+
             Reading.create_from_udp(timezone.now(), host, messageCounter, sensorID, udpdata)
+
             
         except Exception as e:
             logger.error('Received: data from {}. Failed to create Measurement with exception: {}: {}'.format(host, e.__class__.__name__, e))

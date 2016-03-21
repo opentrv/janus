@@ -150,7 +150,7 @@ class Reading(models.Model):
        
 
     @staticmethod
-    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
+    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, hex_decrypted_payload):
 	
 		'''
 		1) Create a Meaurement object using the packet_timestamp
@@ -163,6 +163,7 @@ class Reading(models.Model):
 		5) Add a temperature Reading record
 		6) Add a relative humidity Reading record
 		7) etc.
+
 	
 		for 4,5,6 refer to the previous code. Understand how it is used and understand mock-patch testing.	   
 	
