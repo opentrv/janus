@@ -148,9 +148,48 @@ class Reading(models.Model):
         return self.measurement_type
        
        
+    #Convert the first two bytes into 3 json objects - CallForHeat (0/1) valve position (0-100) flags (0-255)
+	# see https://raw.githubusercontent.com/DamonHD/OpenTRV/master/standards/protocol/IoTCommsFrameFormat/SecureBasicFrame-V0.1-201601.txt	   
+    @staticmethod
+    def jsonify_first_two_bytes(b):
+     	
+     	# MSB of first byte = call for heat (true/false)
+     	if b[0] & 0x80 !=0:
+     		cfh='\"b\":1'
+     	else:
+     		cfh='\"b\":0'
+     	# bottom 7 bits of fisrt byte give valve percentage open
+          	
+        #extract the valve percentage open  	
+        valve = '\"v\":%d' %(b[0]&0x7F)
+     	
+     	#test the fault bit (bit7)
+     	if b[1] &0x80 == 0:
+     		fault = '\"f\":0'
+     	else:
+     		fault = '\"f\":1'
+     	
+     	#test the battery low bit (bit 6)
+     	if b[1] &0x40 == 0:
+     		batt_low = '\"B\":0'
+     	else:
+     		batt_low = '\"B|":1'	
+     
+       	#test occupancy bits 2 & 3
+       	occ= (b[1]&0x0c)>>2 	
+       	occ_str = '\"O\":%d'%occ
+     	
+     	#test frost bit
+     	if b[1] & 0x02 ==0:
+     		fr = '\"fr\":0'
+     	else:
+     		fr= '\"fr\":1'	
+     	
+     	return  (',' + cfh + ',' + valve +','+ fault +','+ batt_low + ',' + occ_str +',' + fr)
+     
 
     @staticmethod
-    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, hex_decrypted_payload):
+    def create_from_udp(packet_timestamp, source_ip_address, message_counter, node_id, decrypted_payload):
 	
 		'''
 		1) Create a Meaurement object using the packet_timestamp
@@ -168,15 +207,12 @@ class Reading(models.Model):
 		for 4,5,6 refer to the previous code. Understand how it is used and understand mock-patch testing.	   
 	
 		'''
-	    	
-	    #ToDo convert the first two bytes into 3 json objects - CallForHeat (0/1) valve position (0-100) flags (0-255)
-	    # see https://raw.githubusercontent.com/DamonHD/OpenTRV/master/standards/protocol/IoTCommsFrameFormat/SecureBasicFrame-V0.1-201601.txt		
-	    	
+	    # Strip the first two bytes off of the incoming message - they are not Json formatted and need to be handled separately	
+		first2bytes = decrypted_payload[0:2]
+		
 	    	
 	    #The incoming Json string doesnt have a close bracket on it. It may also be padded out to a fixed length with 0s
 	    # so we need to add a } either at the position of the first padding 0 or at the end.
-	    
-	    # Strip the first two bytes off of the incoming message - they are not Json formatted and need to be handled separately
     
      	#Test to see if there is any message beyond the first two bytes (which are always present)
 	 	if len(decrypted_payload) > 2:
@@ -184,14 +220,13 @@ class Reading(models.Model):
 			st = decrypted_payload[2:] # extract the json string	
 			print ('packet: {}'.format(st))
 			
-			# find out how many 0 padding bytes there are
-			
+			# find out how many 0 padding bytes there are the last byt in the array contains the number of padding bytes
 			padding_len = ord(st[len(st)-1])
 			
 			print ('There are %d padding bytes'%padding_len)
 			
-			#remove padding bytes and add a }
-			json_string = st[0:len(st)-(padding_len+1)] + '}'
+			#remove padding bytes add the jsonified values from the first two bytes and  a }
+			json_string = st[0:len(st)-(padding_len+1)] + Reading.jsonify_first_two_bytes(bytearray(first2bytes)) + '}'
 			
 			print (json_string)
 			
@@ -228,30 +263,33 @@ class Reading(models.Model):
 		                 'vC': 'valve_travel',
 		                 'O': 'occupancy',
 		                 'b': 'boiler',
-		        }[type_]
-
-		if type_ == 'temperature' or type_ == 'target_temperature':
-		        if units == 'C16':
-		            val = val / 16.
-		        elif units == 'C':
-		            pass
-		        else:
-		            raise Exception('Unrecognised unit of temperature')
-		if type_ == 'battery':
-		        if units == 'cV':
-		            val = val * 0.01
-		        elif units == 'V':
-		            pass
-		        elif units == 'mV':
-		            val = val * 0.001
-		        else:
-		            raise Exception('Unrecognised unit of battery')
-		if type_ == 'boiler':
-		        if val not in [0, 1]:
-		            raise Exception('Invalid value for boiler: {}, allowed values: [0, 1]'.format(val))
-		
-		reading = Reading(measurement_ref = measurement, measurement_type=type_, value=val)                
-		reading.save()
+		                 'f': 'fault',
+		                 'fr': 'frost',          
+		    		 }[type_]
+                     
+		        
+            if type_ == 'temperature' or type_ == 'target_temperature':
+            	if units == 'C16':
+                	val = val / 16
+                 elif units == 'C':
+                    pass
+                else:
+                    raise Exception('Unrecognised unit of temperature')
+                   
+            if type_ == 'battery':
+                if units == 'cV':
+                    val = val * 0.01
+                elif units == 'V':
+                    pass
+                elif units == 'mV':
+                    val = val * 0.001
+                else:
+                    raise Exception('Unrecognised unit of battery')
+            if type_ == 'boiler':
+                if val not in [0, 1]:
+                    raise Exception('Invalid value for boiler: {}, allowed values: [0, 1]'.format(val))
+            reading = Reading(measurement_ref = measurement, measurement_type=type_, value=val)                
+            reading.save()
                 
 
     def create_sensor_record(node_id):
